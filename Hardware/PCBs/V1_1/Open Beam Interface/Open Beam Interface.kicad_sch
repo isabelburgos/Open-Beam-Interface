@@ -30948,7 +30948,7 @@
 				)
 			)
 		)
-		(property "Value" "74ALVCH16373DGG:11"
+		(property "Value" "SN74ALVCH16374DGGR"
 			(at 266.7 87.63 90)
 			(effects
 				(font
@@ -30983,7 +30983,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "https://www.digikey.com/en/products/detail/nexperia-usa-inc/74ALVCH16373DGG-11/2228810"
+		(property "Order Link" ""
 			(at 266.7 83.82 0)
 			(effects
 				(font
@@ -30992,7 +30992,7 @@
 				(hide yes)
 			)
 		)
-		(property "DK Part Number" "1727-8378-1-ND"
+		(property "DK Part Number" "296-1144-1-ND"
 			(at 266.7 83.82 0)
 			(effects
 				(font
@@ -31357,7 +31357,16 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "Assortment"
+		(property "Order Link" ""
+			(at 458.47 195.58 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DK Part Number" "A139971CT-ND"
 			(at 458.47 195.58 0)
 			(effects
 				(font
@@ -31704,6 +31713,15 @@
 				(hide yes)
 			)
 		)
+		(property "DK Part Number" "F3137CT-ND"
+			(at 63.5 30.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "885ac1ff-a897-4cb4-851e-4abebcd46cd7")
 		)
@@ -31837,7 +31855,7 @@
 				(hide yes)
 			)
 		)
-		(property "Is Good" "Y"
+		(property "Is Good" "y"
 			(at 427.99 210.82 0)
 			(effects
 				(font
@@ -31846,7 +31864,16 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "Assortment"
+		(property "Order Link" ""
+			(at 427.99 210.82 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DK Part Number" "541-9840-1-ND"
 			(at 427.99 210.82 0)
 			(effects
 				(font
@@ -32271,7 +32298,16 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "Assortment"
+		(property "Order Link" ""
+			(at 83.82 307.34 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DK Part Number" "P10KBDCT-ND"
 			(at 83.82 307.34 0)
 			(effects
 				(font
@@ -33712,7 +33748,7 @@
 				(hide yes)
 			)
 		)
-		(property "Is Good" "Y"
+		(property "Is Good" "y"
 			(at 411.48 60.96 0)
 			(effects
 				(font
@@ -33721,7 +33757,7 @@
 				(hide yes)
 			)
 		)
-		(property "DK Part Number" "1712-RA73F1J226RBTDCT-ND"
+		(property "DK Part Number" "A140730CT-ND"
 			(at 411.48 60.96 0)
 			(effects
 				(font
@@ -33730,7 +33766,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "https://www.digikey.com/en/products/detail/te-connectivity-passive-product/RA73F1J226RBTD/16030916"
+		(property "Order Link" ""
 			(at 411.48 60.96 0)
 			(effects
 				(font
@@ -34342,7 +34378,7 @@
 				(hide yes)
 			)
 		)
-		(property "Is Good" "y"
+		(property "Is Good" ""
 			(at 67.31 85.09 0)
 			(effects
 				(font
@@ -34420,7 +34456,7 @@
 				(hide yes)
 			)
 		)
-		(property "Is Good" "y"
+		(property "Is Good" ""
 			(at 58.42 306.07 0)
 			(effects
 				(font
@@ -34957,7 +34993,7 @@
 				(hide yes)
 			)
 		)
-		(property "Is Good" "Y"
+		(property "Is Good" "y"
 			(at 430.53 45.72 0)
 			(effects
 				(font
@@ -34966,7 +35002,16 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "Assortment"
+		(property "Order Link" ""
+			(at 430.53 45.72 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DK Part Number" "541-9840-1-ND"
 			(at 430.53 45.72 0)
 			(effects
 				(font
@@ -35118,7 +35163,16 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "Assortment"
+		(property "Order Link" ""
+			(at 458.47 66.04 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DK Part Number" "A139971CT-ND"
 			(at 458.47 66.04 0)
 			(effects
 				(font
@@ -35501,7 +35555,16 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "Assortment"
+		(property "Order Link" ""
+			(at 83.82 382.27 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DK Part Number" "P10KBDCT-ND"
 			(at 83.82 382.27 0)
 			(effects
 				(font
@@ -35930,7 +35993,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "https://www.digikey.com/en/products/detail/qt-brightek-qtb/QBLP601D-O/13278855"
+		(property "Order Link" "https://www.digikey.com/en/products/detail/harvatek-corporation/B1931UD-05D000314U1930/15861266?s=N4IgjCBcoMwOxVAYygMwIYBsDOBTANCAPZQDaIMAHAEwwCsALCALqEAOALlCAMocBOASwB2AcxABfQgDYAnIhApIGHAWJkQDAAyyYuluy6ReAkeKkhqW6QqUq8hEpHJhpeypQMhO3PkLGShGDUshDQimhYDurOFLLUDHQghHoJNqzeRib%2B5kGUDDC2kaqOGjBU0nTUXj7GfmaBIAC01eFKAgCuak7kSYTyzBZN8m1Qnd0aEIMSEkA"
 			(at 80.01 339.09 0)
 			(effects
 				(font
@@ -35939,7 +36002,7 @@
 				(hide yes)
 			)
 		)
-		(property "DK Part Number" "1516-QBLP601D-OCT-ND"
+		(property "DK Part Number" "3147-B1931UD--05D000314U1930CT-ND"
 			(at 80.01 339.09 0)
 			(effects
 				(font
@@ -36347,7 +36410,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "Assortment"
+		(property "Order Link" ""
 			(at 48.26 137.16 0)
 			(effects
 				(font
@@ -36356,7 +36419,7 @@
 				(hide yes)
 			)
 		)
-		(property "DK Part Number" ""
+		(property "DK Part Number" "F12082CT-ND"
 			(at 48.26 137.16 0)
 			(effects
 				(font
@@ -36365,7 +36428,7 @@
 				(hide yes)
 			)
 		)
-		(property "Is Good" "Y"
+		(property "Is Good" "y"
 			(at 48.26 137.16 0)
 			(effects
 				(font
@@ -36442,7 +36505,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "Assortment"
+		(property "Order Link" ""
 			(at 48.26 152.4 0)
 			(effects
 				(font
@@ -36451,7 +36514,7 @@
 				(hide yes)
 			)
 		)
-		(property "DK Part Number" ""
+		(property "DK Part Number" "F12082CT-ND"
 			(at 48.26 152.4 0)
 			(effects
 				(font
@@ -36460,7 +36523,7 @@
 				(hide yes)
 			)
 		)
-		(property "Is Good" "Y"
+		(property "Is Good" "y"
 			(at 48.26 152.4 0)
 			(effects
 				(font
@@ -36841,7 +36904,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "https://www.digikey.com/en/products/detail/littelfuse-inc/01550900M/2519878?s=N4IgTCBcDaIAwEYCsS4E45wLYgLoF8g"
+		(property "Order Link" ""
 			(at 88.9 25.4 0)
 			(effects
 				(font
@@ -37022,7 +37085,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "Assortment"
+		(property "Order Link" ""
 			(at 391.16 223.52 0)
 			(effects
 				(font
@@ -37031,7 +37094,7 @@
 				(hide yes)
 			)
 		)
-		(property "DK Part Number" ""
+		(property "DK Part Number" "A140593CT-ND"
 			(at 391.16 223.52 0)
 			(effects
 				(font
@@ -37134,7 +37197,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "https://www.digikey.com/en/products/detail/te-connectivity-passive-product/CRG0603ZR/2380828"
+		(property "Order Link" ""
 			(at 452.12 184.15 0)
 			(effects
 				(font
@@ -37420,7 +37483,16 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "Assortment"
+		(property "Order Link" ""
+			(at 185.42 372.11 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DK Part Number" "P392KHCT-ND"
 			(at 185.42 372.11 0)
 			(effects
 				(font
@@ -37499,7 +37571,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "https://www.digikey.com/en/products/detail/molex/0878342019/3303513?s=N4IgTCBcDaILIHsA2BTAHgAgAwA4DsOAzACxhYCMAnCALoC%2BQA"
+		(property "Order Link" ""
 			(at 190.5 110.49 0)
 			(effects
 				(font
@@ -37821,7 +37893,16 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "Assortment"
+		(property "Order Link" ""
+			(at 83.82 297.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DK Part Number" "P90.9KDBCT-ND"
 			(at 83.82 297.18 0)
 			(effects
 				(font
@@ -37965,7 +38046,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "https://www.digikey.com/en/products/detail/yageo/RP0603BRD0725RL/16916489"
+		(property "Order Link" ""
 			(at 379.73 77.47 0)
 			(effects
 				(font
@@ -38517,6 +38598,15 @@
 			)
 		)
 		(property "Is Good" "Y"
+			(at 76.2 27.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DK Part Number" "F3137CT-ND"
 			(at 76.2 27.94 0)
 			(effects
 				(font
@@ -40256,7 +40346,7 @@
 				(hide yes)
 			)
 		)
-		(property "Is Good" "Y"
+		(property "Is Good" "y"
 			(at 411.48 66.04 0)
 			(effects
 				(font
@@ -40265,7 +40355,7 @@
 				(hide yes)
 			)
 		)
-		(property "DK Part Number" "1712-RA73F1J226RBTDCT-ND"
+		(property "DK Part Number" "A140730CT-ND"
 			(at 411.48 66.04 0)
 			(effects
 				(font
@@ -40274,7 +40364,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "https://www.digikey.com/en/products/detail/te-connectivity-passive-product/RA73F1J226RBTD/16030916"
+		(property "Order Link" ""
 			(at 411.48 66.04 0)
 			(effects
 				(font
@@ -41290,7 +41380,16 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "Assortment"
+		(property "Order Link" ""
+			(at 53.34 306.07 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DK Part Number" "P33KBDCT-ND"
 			(at 53.34 306.07 0)
 			(effects
 				(font
@@ -41578,7 +41677,16 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "Assortment"
+		(property "Order Link" ""
+			(at 477.52 48.26 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DK Part Number" "A140440CT-ND"
 			(at 477.52 48.26 0)
 			(effects
 				(font
@@ -41657,7 +41765,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "https://www.digikey.com/en/products/detail/molex/0878342019/3303513?s=N4IgTCBcDaILIHsA2BTAHgAgAwA4DsOAzACxhYCMAnCALoC%2BQA"
+		(property "Order Link" ""
 			(at 180.34 50.8 0)
 			(effects
 				(font
@@ -42490,7 +42598,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "https://www.digikey.com/en/products/detail/yageo/RP0603BRD0725RL/16916489"
+		(property "Order Link" ""
 			(at 394.97 207.01 0)
 			(effects
 				(font
@@ -42718,7 +42826,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "https://www.digikey.com/en/products/detail/qt-brightek-qtb/QBLP601D-O/13278855"
+		(property "Order Link" "https://www.digikey.com/en/products/detail/harvatek-corporation/B1931UD-05D000314U1930/15861266?s=N4IgjCBcoMwOxVAYygMwIYBsDOBTANCAPZQDaIMAHAEwwCsALCALqEAOALlCAMocBOASwB2AcxABfQgDYAnIhApIGHAWJkQDAAyyYuluy6ReAkeKkhqW6QqUq8hEpHJhpeypQMhO3PkLGShGDUshDQimhYDurOFLLUDHQghHoJNqzeRib%2B5kGUDDC2kaqOGjBU0nTUXj7GfmaBIAC01eFKAgCuak7kSYTyzBZN8m1Qnd0aEIMSEkA"
 			(at 63.5 130.81 0)
 			(effects
 				(font
@@ -42727,7 +42835,7 @@
 				(hide yes)
 			)
 		)
-		(property "DK Part Number" "1516-QBLP601D-OCT-ND"
+		(property "DK Part Number" "3147-B1931UD--05D000314U1930CT-ND"
 			(at 63.5 130.81 0)
 			(effects
 				(font
@@ -42978,7 +43086,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "https://www.digikey.com/en/products/detail/yageo/RP0603BRD0725RL/16916489"
+		(property "Order Link" ""
 			(at 377.19 207.01 0)
 			(effects
 				(font
@@ -43299,7 +43407,7 @@
 				(hide yes)
 			)
 		)
-		(property "Is Good" "Y"
+		(property "Is Good" "y"
 			(at 429.26 358.14 0)
 			(effects
 				(font
@@ -43308,7 +43416,16 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "Assortment"
+		(property "Order Link" ""
+			(at 429.26 358.14 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DK Part Number" "A139971CT-ND"
 			(at 429.26 358.14 0)
 			(effects
 				(font
@@ -43518,7 +43635,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "https://www.digikey.com/en/products/detail/yageo/RP0603BRD0725RL/16916489"
+		(property "Order Link" ""
 			(at 396.24 342.9 0)
 			(effects
 				(font
@@ -43877,7 +43994,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "https://www.digikey.com/en/products/detail/vishay-dale/TNPU0603500RAZEN00/6615936"
+		(property "Order Link" ""
 			(at 468.63 335.28 0)
 			(effects
 				(font
@@ -44210,7 +44327,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "Assortment"
+		(property "Order Link" ""
 			(at 41.91 71.12 0)
 			(effects
 				(font
@@ -44219,7 +44336,7 @@
 				(hide yes)
 			)
 		)
-		(property "DK Part Number" ""
+		(property "DK Part Number" "F12082CT-ND"
 			(at 41.91 71.12 0)
 			(effects
 				(font
@@ -44228,7 +44345,7 @@
 				(hide yes)
 			)
 		)
-		(property "Is Good" "Y"
+		(property "Is Good" "y"
 			(at 41.91 71.12 0)
 			(effects
 				(font
@@ -44494,7 +44611,16 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "Assortment"
+		(property "Order Link" ""
+			(at 185.42 382.27 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DK Part Number" "P10KBDCT-ND"
 			(at 185.42 382.27 0)
 			(effects
 				(font
@@ -44667,7 +44793,7 @@
 				(hide yes)
 			)
 		)
-		(property "DK Part Number" "296-10054-5-ND"
+		(property "DK Part Number" "296-13344-1-ND"
 			(at 425.45 193.04 0)
 			(effects
 				(font
@@ -44676,7 +44802,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "https://www.digikey.com/en/products/detail/texas-instruments/THS4151ID/380601"
+		(property "Order Link" ""
 			(at 425.45 193.04 0)
 			(effects
 				(font
@@ -44865,93 +44991,6 @@
 	)
 	(symbol
 		(lib_id "Device:R")
-		(at 53.34 381 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "4e9f5ca3-5147-4bf9-a59b-3983ea287002")
-		(property "Reference" "R2"
-			(at 51.435 382.27 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "140k"
-			(at 53.34 383.54 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
-			(at 51.562 381 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 53.34 381 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 53.34 381 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Is Good" "Y"
-			(at 53.34 381 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Order Link" "Assortment"
-			(at 53.34 381 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "83a29d6d-7439-4cb0-abb6-0846009aa073")
-		)
-		(pin "2"
-			(uuid "f07c135c-e9fa-486a-83a5-fc2161fb6fc9")
-		)
-		(instances
-			(project "Open Beam Interface"
-				(path "/39dd4815-2a60-44cf-8871-b7872a24db88"
-					(reference "R2")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Device:R")
 		(at 53.34 232.41 0)
 		(unit 1)
 		(exclude_from_sim no)
@@ -45013,7 +45052,16 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "Assortment"
+		(property "Order Link" ""
+			(at 53.34 232.41 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DK Part Number" "P33KBDCT-ND"
 			(at 53.34 232.41 0)
 			(effects
 				(font
@@ -46315,7 +46363,7 @@
 				(hide yes)
 			)
 		)
-		(property "Is Good" "Y"
+		(property "Is Good" "y"
 			(at 63.5 339.09 0)
 			(effects
 				(font
@@ -46324,7 +46372,16 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "Assortment"
+		(property "Order Link" ""
+			(at 63.5 339.09 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DK Part Number" "P10KBDCT-ND"
 			(at 63.5 339.09 0)
 			(effects
 				(font
@@ -46632,7 +46689,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "https://www.digikey.com/en/products/detail/amphenol-rf/031-5538-10RFX/2041817"
+		(property "Order Link" ""
 			(at 575.31 332.74 0)
 			(effects
 				(font
@@ -47260,7 +47317,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "https://www.digikey.com/en/products/detail/te-connectivity-passive-product/CRG0603ZR/2380828"
+		(property "Order Link" ""
 			(at 505.46 193.04 0)
 			(effects
 				(font
@@ -47336,7 +47393,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "Assortment"
+		(property "Order Link" ""
 			(at 547.37 275.59 0)
 			(effects
 				(font
@@ -47345,7 +47402,7 @@
 				(hide yes)
 			)
 		)
-		(property "DK Part Number" ""
+		(property "DK Part Number" "A140753CT-ND"
 			(at 547.37 275.59 0)
 			(effects
 				(font
@@ -47821,7 +47878,7 @@
 				(hide yes)
 			)
 		)
-		(property "DK Part Number" "3224W-202ECT-ND"
+		(property "DK Part Number" "118-3224W-1-203ECT-ND"
 			(at 407.67 109.22 0)
 			(effects
 				(font
@@ -47830,7 +47887,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "https://www.digikey.com/en/products/detail/bourns-inc/3224W-1-202E/225658"
+		(property "Order Link" "https://www.digikey.com/en/products/detail/bourns-inc/3224W-1-203E/225661"
 			(at 407.67 109.22 0)
 			(effects
 				(font
@@ -47920,7 +47977,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "https://www.digikey.com/en/products/detail/yageo/RP0603BRD0725RL/16916489"
+		(property "Order Link" ""
 			(at 397.51 77.47 0)
 			(effects
 				(font
@@ -48377,7 +48434,7 @@
 				(hide yes)
 			)
 		)
-		(property "Is Good" "Y"
+		(property "Is Good" "y"
 			(at 408.94 195.58 0)
 			(effects
 				(font
@@ -48386,7 +48443,7 @@
 				(hide yes)
 			)
 		)
-		(property "DK Part Number" "1712-RA73F1J226RBTDCT-ND"
+		(property "DK Part Number" "A140730CT-ND"
 			(at 408.94 195.58 0)
 			(effects
 				(font
@@ -48395,7 +48452,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "https://www.digikey.com/en/products/detail/te-connectivity-passive-product/RA73F1J226RBTD/16030916"
+		(property "Order Link" ""
 			(at 408.94 195.58 0)
 			(effects
 				(font
@@ -48473,6 +48530,15 @@
 			)
 		)
 		(property "Is Good" "Y"
+			(at 88.9 25.4 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DK Part Number" "F3137CT-ND"
 			(at 88.9 25.4 0)
 			(effects
 				(font
@@ -48777,7 +48843,7 @@
 				(hide yes)
 			)
 		)
-		(property "Is Good" "Y"
+		(property "Is Good" "y"
 			(at 429.26 320.04 0)
 			(effects
 				(font
@@ -48786,7 +48852,16 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "Assortment"
+		(property "Order Link" ""
+			(at 429.26 320.04 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DK Part Number" "A139971CT-ND"
 			(at 429.26 320.04 0)
 			(effects
 				(font
@@ -48864,7 +48939,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "https://www.digikey.com/en/products/detail/amphenol-rf/031-5538-10RFX/2041817"
+		(property "Order Link" ""
 			(at 515.62 63.5 0)
 			(effects
 				(font
@@ -49188,7 +49263,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "https://www.digikey.com/en/products/detail/qt-brightek-qtb/QBLP601D-O/13278855"
+		(property "Order Link" "https://www.digikey.com/en/products/detail/harvatek-corporation/B1931UD-05D000314U1930/15861266?s=N4IgjCBcoMwOxVAYygMwIYBsDOBTANCAPZQDaIMAHAEwwCsALCALqEAOALlCAMocBOASwB2AcxABfQgDYAnIhApIGHAWJkQDAAyyYuluy6ReAkeKkhqW6QqUq8hEpHJhpeypQMhO3PkLGShGDUshDQimhYDurOFLLUDHQghHoJNqzeRib%2B5kGUDDC2kaqOGjBU0nTUXj7GfmaBIAC01eFKAgCuak7kSYTyzBZN8m1Qnd0aEIMSEkA"
 			(at 63.5 158.75 0)
 			(effects
 				(font
@@ -49197,7 +49272,7 @@
 				(hide yes)
 			)
 		)
-		(property "DK Part Number" "1516-QBLP601D-OCT-ND"
+		(property "DK Part Number" "3147-B1931UD--05D000314U1930CT-ND"
 			(at 63.5 158.75 0)
 			(effects
 				(font
@@ -49348,7 +49423,7 @@
 				(hide yes)
 			)
 		)
-		(property "Is Good" "Y"
+		(property "Is Good" "y"
 			(at 448.31 340.36 0)
 			(effects
 				(font
@@ -49357,7 +49432,16 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "Assortment"
+		(property "Order Link" ""
+			(at 448.31 340.36 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DK Part Number" "A139971CT-ND"
 			(at 448.31 340.36 0)
 			(effects
 				(font
@@ -49517,7 +49601,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "https://www.digikey.com/en/products/detail/vishay-dale/TNPU0603500RAZEN00/6615936"
+		(property "Order Link" ""
 			(at 483.87 335.28 0)
 			(effects
 				(font
@@ -49700,7 +49784,16 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "Assortment"
+		(property "Order Link" ""
+			(at 83.82 233.68 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DK Part Number" "P10KBDCT-ND"
 			(at 83.82 233.68 0)
 			(effects
 				(font
@@ -50936,7 +51029,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "https://www.digikey.com/en/products/detail/littelfuse-inc/01550900M/2519878?s=N4IgTCBcDaIAwEYCsS4E45wLYgLoF8g"
+		(property "Order Link" ""
 			(at 76.2 27.94 0)
 			(effects
 				(font
@@ -51773,7 +51866,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "Assortment"
+		(property "Order Link" ""
 			(at 41.91 93.98 0)
 			(effects
 				(font
@@ -51782,7 +51875,7 @@
 				(hide yes)
 			)
 		)
-		(property "DK Part Number" ""
+		(property "DK Part Number" "F12082CT-ND"
 			(at 41.91 93.98 0)
 			(effects
 				(font
@@ -51791,7 +51884,7 @@
 				(hide yes)
 			)
 		)
-		(property "Is Good" "Y"
+		(property "Is Good" "y"
 			(at 41.91 93.98 0)
 			(effects
 				(font
@@ -52249,7 +52342,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "https://www.digikey.com/en/products/detail/qt-brightek-qtb/QBLP601D-O/13278855"
+		(property "Order Link" "https://www.digikey.com/en/products/detail/harvatek-corporation/B1931UD-05D000314U1930/15861266?s=N4IgjCBcoMwOxVAYygMwIYBsDOBTANCAPZQDaIMAHAEwwCsALCALqEAOALlCAMocBOASwB2AcxABfQgDYAnIhApIGHAWJkQDAAyyYuluy6ReAkeKkhqW6QqUq8hEpHJhpeypQMhO3PkLGShGDUshDQimhYDurOFLLUDHQghHoJNqzeRib%2B5kGUDDC2kaqOGjBU0nTUXj7GfmaBIAC01eFKAgCuak7kSYTyzBZN8m1Qnd0aEIMSEkA"
 			(at 57.15 85.09 0)
 			(effects
 				(font
@@ -52258,7 +52351,7 @@
 				(hide yes)
 			)
 		)
-		(property "DK Part Number" "1516-QBLP601D-OCT-ND"
+		(property "DK Part Number" "3147-B1931UD--05D000314U1930CT-ND"
 			(at 57.15 85.09 0)
 			(effects
 				(font
@@ -52639,7 +52732,7 @@
 				(hide yes)
 			)
 		)
-		(property "DK Part Number" "3224W-202ECT-ND"
+		(property "DK Part Number" "118-3224W-1-203ECT-ND"
 			(at 405.13 238.76 0)
 			(effects
 				(font
@@ -52648,7 +52741,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "https://www.digikey.com/en/products/detail/bourns-inc/3224W-1-202E/225658"
+		(property "Order Link" "https://www.digikey.com/en/products/detail/bourns-inc/3224W-1-203E/225661"
 			(at 405.13 238.76 0)
 			(effects
 				(font
@@ -52701,7 +52794,7 @@
 				)
 			)
 		)
-		(property "Value" "74ALVCH16373DGG:11"
+		(property "Value" "SN74ALVCH16374DGGR"
 			(at 266.7 212.09 90)
 			(effects
 				(font
@@ -52736,7 +52829,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "https://www.digikey.com/en/products/detail/nexperia-usa-inc/74ALVCH16373DGG-11/2228810"
+		(property "Order Link" ""
 			(at 266.7 209.55 0)
 			(effects
 				(font
@@ -52745,7 +52838,7 @@
 				(hide yes)
 			)
 		)
-		(property "DK Part Number" "1727-8378-1-ND"
+		(property "DK Part Number" "296-1144-1-ND"
 			(at 266.7 209.55 0)
 			(effects
 				(font
@@ -53036,7 +53129,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "Assortment"
+		(property "Order Link" ""
 			(at 391.16 238.76 0)
 			(effects
 				(font
@@ -53045,7 +53138,7 @@
 				(hide yes)
 			)
 		)
-		(property "DK Part Number" ""
+		(property "DK Part Number" "A140440CT-ND"
 			(at 391.16 238.76 0)
 			(effects
 				(font
@@ -53796,7 +53889,7 @@
 				(hide yes)
 			)
 		)
-		(property "Is Good" "y"
+		(property "Is Good" ""
 			(at 67.31 110.49 0)
 			(effects
 				(font
@@ -53958,7 +54051,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "https://www.digikey.com/en/products/detail/te-connectivity-passive-product/CRG0603ZR/2380828"
+		(property "Order Link" ""
 			(at 447.04 184.15 0)
 			(effects
 				(font
@@ -54384,7 +54477,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "https://www.digikey.com/en/products/detail/panasonic-electronic-components/ERJ-3GEY0R00V/135656"
+		(property "Order Link" ""
 			(at 363.22 199.39 0)
 			(effects
 				(font
@@ -55163,7 +55256,7 @@
 				(justify right)
 			)
 		)
-		(property "Value" "5K"
+		(property "Value" "4.99k"
 			(at 554.99 327.66 90)
 			(effects
 				(font
@@ -55199,7 +55292,7 @@
 				(hide yes)
 			)
 		)
-		(property "Is Good" "Y"
+		(property "Is Good" "y"
 			(at 554.99 326.39 0)
 			(effects
 				(font
@@ -55208,7 +55301,16 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "Assortment"
+		(property "Order Link" ""
+			(at 554.99 326.39 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DK Part Number" "A139820CT-ND"
 			(at 554.99 326.39 0)
 			(effects
 				(font
@@ -55284,7 +55386,7 @@
 				(hide yes)
 			)
 		)
-		(property "Is Good" "Y"
+		(property "Is Good" "y"
 			(at 427.99 175.26 0)
 			(effects
 				(font
@@ -55293,7 +55395,16 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "Assortment"
+		(property "Order Link" ""
+			(at 427.99 175.26 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DK Part Number" "541-9840-1-ND"
 			(at 427.99 175.26 0)
 			(effects
 				(font
@@ -55378,7 +55489,16 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "Assortment"
+		(property "Order Link" ""
+			(at 477.52 177.8 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DK Part Number" "A140440CT-ND"
 			(at 477.52 177.8 0)
 			(effects
 				(font
@@ -55454,7 +55574,7 @@
 				(hide yes)
 			)
 		)
-		(property "Is Good" "Y"
+		(property "Is Good" "y"
 			(at 430.53 81.28 0)
 			(effects
 				(font
@@ -55463,7 +55583,16 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "Assortment"
+		(property "Order Link" ""
+			(at 430.53 81.28 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DK Part Number" "541-9840-1-ND"
 			(at 430.53 81.28 0)
 			(effects
 				(font
@@ -55550,7 +55679,16 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "Assortment"
+		(property "Order Link" ""
+			(at 83.82 372.11 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DK Part Number" "P392KHCT-ND"
 			(at 83.82 372.11 0)
 			(effects
 				(font
@@ -55712,7 +55850,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "https://www.digikey.com/en/products/detail/te-connectivity-passive-product/CRG0603ZR/2380828"
+		(property "Order Link" ""
 			(at 452.12 72.39 0)
 			(effects
 				(font
@@ -55797,7 +55935,16 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "Assortment"
+		(property "Order Link" ""
+			(at 458.47 60.96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DK Part Number" "A139971CT-ND"
 			(at 458.47 60.96 0)
 			(effects
 				(font
@@ -57036,7 +57183,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "https://www.digikey.com/en/products/detail/littelfuse-inc/01550900M/2519878?s=N4IgTCBcDaIAwEYCsS4E45wLYgLoF8g"
+		(property "Order Link" ""
 			(at 63.5 30.48 0)
 			(effects
 				(font
@@ -57282,7 +57429,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "https://www.digikey.com/en/products/detail/yageo/RP0603BRD0725RL/16916489"
+		(property "Order Link" ""
 			(at 396.24 332.74 0)
 			(effects
 				(font
@@ -57807,7 +57954,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "https://www.digikey.com/en/products/detail/qt-brightek-qtb/QBLP601D-O/13278855"
+		(property "Order Link" "https://www.digikey.com/en/products/detail/harvatek-corporation/B1931UD-05D000314U1930/15861266?s=N4IgjCBcoMwOxVAYygMwIYBsDOBTANCAPZQDaIMAHAEwwCsALCALqEAOALlCAMocBOASwB2AcxABfQgDYAnIhApIGHAWJkQDAAyyYuluy6ReAkeKkhqW6QqUq8hEpHJhpeypQMhO3PkLGShGDUshDQimhYDurOFLLUDHQghHoJNqzeRib%2B5kGUDDC2kaqOGjBU0nTUXj7GfmaBIAC01eFKAgCuak7kSYTyzBZN8m1Qnd0aEIMSEkA"
 			(at 80.01 264.16 0)
 			(effects
 				(font
@@ -57816,7 +57963,7 @@
 				(hide yes)
 			)
 		)
-		(property "DK Part Number" "1516-QBLP601D-OCT-ND"
+		(property "DK Part Number" "3147-B1931UD--05D000314U1930CT-ND"
 			(at 80.01 264.16 0)
 			(effects
 				(font
@@ -57986,7 +58133,7 @@
 				(hide yes)
 			)
 		)
-		(property "Is Good" "y"
+		(property "Is Good" ""
 			(at 71.12 186.69 0)
 			(effects
 				(font
@@ -58131,7 +58278,7 @@
 				(hide yes)
 			)
 		)
-		(property "DK Part Number" "296-10054-5-ND"
+		(property "DK Part Number" "296-13344-1-ND"
 			(at 427.99 63.5 0)
 			(effects
 				(font
@@ -58140,7 +58287,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "https://www.digikey.com/en/products/detail/texas-instruments/THS4151ID/380601"
+		(property "Order Link" ""
 			(at 427.99 63.5 0)
 			(effects
 				(font
@@ -59128,7 +59275,7 @@
 				(hide yes)
 			)
 		)
-		(property "Is Good" "Y"
+		(property "Is Good" "y"
 			(at 63.5 264.16 0)
 			(effects
 				(font
@@ -59137,7 +59284,16 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "Assortment"
+		(property "Order Link" ""
+			(at 63.5 264.16 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DK Part Number" "P10KBDCT-ND"
 			(at 63.5 264.16 0)
 			(effects
 				(font
@@ -59474,7 +59630,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "Assortment"
+		(property "Order Link" ""
 			(at 544.83 281.94 0)
 			(effects
 				(font
@@ -59483,7 +59639,7 @@
 				(hide yes)
 			)
 		)
-		(property "DK Part Number" ""
+		(property "DK Part Number" "A139979CT-ND"
 			(at 544.83 281.94 0)
 			(effects
 				(font
@@ -59843,7 +59999,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "Assortment"
+		(property "Order Link" ""
 			(at 393.7 109.22 0)
 			(effects
 				(font
@@ -59852,7 +60008,7 @@
 				(hide yes)
 			)
 		)
-		(property "DK Part Number" ""
+		(property "DK Part Number" "A140440CT-ND"
 			(at 393.7 109.22 0)
 			(effects
 				(font
@@ -60385,7 +60541,16 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "Assortment"
+		(property "Order Link" ""
+			(at 458.47 190.5 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DK Part Number" "A139971CT-ND"
 			(at 458.47 190.5 0)
 			(effects
 				(font
@@ -60633,7 +60798,16 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "Assortment"
+		(property "Order Link" ""
+			(at 467.36 72.39 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DK Part Number" "A139971CT-ND"
 			(at 467.36 72.39 0)
 			(effects
 				(font
@@ -61671,7 +61845,16 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "Assortment"
+		(property "Order Link" ""
+			(at 83.82 223.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DK Part Number" "P90.9KDBCT-ND"
 			(at 83.82 223.52 0)
 			(effects
 				(font
@@ -61873,7 +62056,7 @@
 				)
 			)
 		)
-		(property "Value" "5K"
+		(property "Value" "4.99k"
 			(at 561.34 332.74 90)
 			(effects
 				(font
@@ -61908,7 +62091,7 @@
 				(hide yes)
 			)
 		)
-		(property "Is Good" "Y"
+		(property "Is Good" "y"
 			(at 561.34 332.74 0)
 			(effects
 				(font
@@ -61917,7 +62100,16 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "Assortment"
+		(property "Order Link" ""
+			(at 561.34 332.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DK Part Number" "A139820CT-ND"
 			(at 561.34 332.74 0)
 			(effects
 				(font
@@ -63231,7 +63423,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "https://www.digikey.com/en/products/detail/molex/0878342019/3303513?s=N4IgTCBcDaILIHsA2BTAHgAgAwA4DsOAzACxhYCMAnCALoC%2BQA"
+		(property "Order Link" ""
 			(at 190.5 153.67 0)
 			(effects
 				(font
@@ -63632,7 +63824,7 @@
 				(hide yes)
 			)
 		)
-		(property "Is Good" "Y"
+		(property "Is Good" "y"
 			(at 513.08 316.23 0)
 			(effects
 				(font
@@ -63641,7 +63833,16 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "Assortment"
+		(property "Order Link" ""
+			(at 513.08 316.23 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DK Part Number" "A139971CT-ND"
 			(at 513.08 316.23 0)
 			(effects
 				(font
@@ -63792,7 +63993,16 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "Assortment"
+		(property "Order Link" ""
+			(at 467.36 201.93 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DK Part Number" "A139971CT-ND"
 			(at 467.36 201.93 0)
 			(effects
 				(font
@@ -64415,7 +64625,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "https://www.digikey.com/en/products/detail/panasonic-electronic-components/ERJ-3GEY0R00V/135656"
+		(property "Order Link" ""
 			(at 293.37 360.68 0)
 			(effects
 				(font
@@ -66273,7 +66483,7 @@
 				(hide yes)
 			)
 		)
-		(property "Is Good" "Y"
+		(property "Is Good" "y"
 			(at 63.5 190.5 0)
 			(effects
 				(font
@@ -66282,7 +66492,16 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "Assortment"
+		(property "Order Link" ""
+			(at 63.5 190.5 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DK Part Number" "P10KBDCT-ND"
 			(at 63.5 190.5 0)
 			(effects
 				(font
@@ -66369,7 +66588,16 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "Assortment"
+		(property "Order Link" ""
+			(at 58.42 381 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DK Part Number" "A139971CT-ND"
 			(at 58.42 381 0)
 			(effects
 				(font
@@ -66646,7 +66874,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "https://www.digikey.com/en/products/detail/qt-brightek-qtb/QBLP601D-O/13278855"
+		(property "Order Link" "https://www.digikey.com/en/products/detail/harvatek-corporation/B1931UD-05D000314U1930/15861266?s=N4IgjCBcoMwOxVAYygMwIYBsDOBTANCAPZQDaIMAHAEwwCsALCALqEAOALlCAMocBOASwB2AcxABfQgDYAnIhApIGHAWJkQDAAyyYuluy6ReAkeKkhqW6QqUq8hEpHJhpeypQMhO3PkLGShGDUshDQimhYDurOFLLUDHQghHoJNqzeRib%2B5kGUDDC2kaqOGjBU0nTUXj7GfmaBIAC01eFKAgCuak7kSYTyzBZN8m1Qnd0aEIMSEkA"
 			(at 181.61 339.09 0)
 			(effects
 				(font
@@ -66655,7 +66883,7 @@
 				(hide yes)
 			)
 		)
-		(property "DK Part Number" "1516-QBLP601D-OCT-ND"
+		(property "DK Part Number" "3147-B1931UD--05D000314U1930CT-ND"
 			(at 181.61 339.09 0)
 			(effects
 				(font
@@ -66824,7 +67052,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "https://www.digikey.com/en/products/detail/te-connectivity-passive-product/CRG0603ZR/2380828"
+		(property "Order Link" ""
 			(at 505.46 63.5 0)
 			(effects
 				(font
@@ -67128,7 +67356,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "Assortment"
+		(property "Order Link" ""
 			(at 554.99 275.59 0)
 			(effects
 				(font
@@ -67137,7 +67365,7 @@
 				(hide yes)
 			)
 		)
-		(property "DK Part Number" ""
+		(property "DK Part Number" "A139980CT-ND"
 			(at 554.99 275.59 0)
 			(effects
 				(font
@@ -67486,7 +67714,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "Assortment"
+		(property "Order Link" ""
 			(at 393.7 93.98 0)
 			(effects
 				(font
@@ -67495,7 +67723,7 @@
 				(hide yes)
 			)
 		)
-		(property "DK Part Number" ""
+		(property "DK Part Number" "A140593CT-ND"
 			(at 393.7 93.98 0)
 			(effects
 				(font
@@ -67580,7 +67808,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "Assortment"
+		(property "Order Link" ""
 			(at 552.45 281.94 0)
 			(effects
 				(font
@@ -67589,7 +67817,7 @@
 				(hide yes)
 			)
 		)
-		(property "DK Part Number" ""
+		(property "DK Part Number" "10-ERA-3ARB1402VCT-ND"
 			(at 552.45 281.94 0)
 			(effects
 				(font
@@ -67674,7 +67902,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "https://www.digikey.com/en/products/detail/qt-brightek-qtb/QBLP601D-O/13278855"
+		(property "Order Link" "https://www.digikey.com/en/products/detail/harvatek-corporation/B1931UD-05D000314U1930/15861266?s=N4IgjCBcoMwOxVAYygMwIYBsDOBTANCAPZQDaIMAHAEwwCsALCALqEAOALlCAMocBOASwB2AcxABfQgDYAnIhApIGHAWJkQDAAyyYuluy6ReAkeKkhqW6QqUq8hEpHJhpeypQMhO3PkLGShGDUshDQimhYDurOFLLUDHQghHoJNqzeRib%2B5kGUDDC2kaqOGjBU0nTUXj7GfmaBIAC01eFKAgCuak7kSYTyzBZN8m1Qnd0aEIMSEkA"
 			(at 80.01 190.5 0)
 			(effects
 				(font
@@ -67683,7 +67911,7 @@
 				(hide yes)
 			)
 		)
-		(property "DK Part Number" "1516-QBLP601D-OCT-ND"
+		(property "DK Part Number" "3147-B1931UD--05D000314U1930CT-ND"
 			(at 80.01 190.5 0)
 			(effects
 				(font
@@ -67992,7 +68220,7 @@
 				)
 			)
 		)
-		(property "Value" "2K"
+		(property "Value" "10K"
 			(at 513.08 312.42 90)
 			(effects
 				(font
@@ -68028,7 +68256,7 @@
 				(hide yes)
 			)
 		)
-		(property "DK Part Number" "3224W-202ECT-ND"
+		(property "DK Part Number" "3224W-103ECT-ND"
 			(at 513.08 306.07 0)
 			(effects
 				(font
@@ -68037,7 +68265,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "https://www.digikey.com/en/products/detail/bourns-inc/3224W-1-202E/225658"
+		(property "Order Link" "https://www.digikey.com/en/products/detail/bourns-inc/3224W-1-103E/225660"
 			(at 513.08 306.07 0)
 			(effects
 				(font
@@ -68335,7 +68563,16 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "Assortment"
+		(property "Order Link" ""
+			(at 160.02 381 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DK Part Number" "A139971CT-ND"
 			(at 160.02 381 0)
 			(effects
 				(font
@@ -68411,7 +68648,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "https://www.digikey.com/en/products/detail/qt-brightek-qtb/QBLP601D-O/13278855"
+		(property "Order Link" "https://www.digikey.com/en/products/detail/harvatek-corporation/B1931UD-05D000314U1930/15861266?s=N4IgjCBcoMwOxVAYygMwIYBsDOBTANCAPZQDaIMAHAEwwCsALCALqEAOALlCAMocBOASwB2AcxABfQgDYAnIhApIGHAWJkQDAAyyYuluy6ReAkeKkhqW6QqUq8hEpHJhpeypQMhO3PkLGShGDUshDQimhYDurOFLLUDHQghHoJNqzeRib%2B5kGUDDC2kaqOGjBU0nTUXj7GfmaBIAC01eFKAgCuak7kSYTyzBZN8m1Qnd0aEIMSEkA"
 			(at 57.15 110.49 0)
 			(effects
 				(font
@@ -68420,7 +68657,7 @@
 				(hide yes)
 			)
 		)
-		(property "DK Part Number" "1516-QBLP601D-OCT-ND"
+		(property "DK Part Number" "3147-B1931UD--05D000314U1930CT-ND"
 			(at 57.15 110.49 0)
 			(effects
 				(font
@@ -68507,7 +68744,7 @@
 				(hide yes)
 			)
 		)
-		(property "Is Good" "y"
+		(property "Is Good" ""
 			(at 58.42 232.41 0)
 			(effects
 				(font
@@ -68851,7 +69088,7 @@
 				(hide yes)
 			)
 		)
-		(property "Is Good" "Y"
+		(property "Is Good" "y"
 			(at 408.94 190.5 0)
 			(effects
 				(font
@@ -68860,7 +69097,7 @@
 				(hide yes)
 			)
 		)
-		(property "DK Part Number" "1712-RA73F1J226RBTDCT-ND"
+		(property "DK Part Number" "A140730CT-ND"
 			(at 408.94 190.5 0)
 			(effects
 				(font
@@ -68869,7 +69106,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "https://www.digikey.com/en/products/detail/te-connectivity-passive-product/RA73F1J226RBTD/16030916"
+		(property "Order Link" ""
 			(at 408.94 190.5 0)
 			(effects
 				(font
@@ -69030,7 +69267,7 @@
 				(hide yes)
 			)
 		)
-		(property "Is Good" "y"
+		(property "Is Good" ""
 			(at 172.72 335.28 0)
 			(effects
 				(font
@@ -69106,7 +69343,7 @@
 				(hide yes)
 			)
 		)
-		(property "Is Good" "Y"
+		(property "Is Good" "y"
 			(at 513.08 311.15 0)
 			(effects
 				(font
@@ -69115,7 +69352,16 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "Assortment"
+		(property "Order Link" ""
+			(at 513.08 311.15 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DK Part Number" "A140444CT-ND"
 			(at 513.08 311.15 0)
 			(effects
 				(font
@@ -69259,7 +69505,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "Assortment"
+		(property "Order Link" ""
 			(at 255.27 292.1 0)
 			(effects
 				(font
@@ -69268,7 +69514,7 @@
 				(hide yes)
 			)
 		)
-		(property "DK Part Number" ""
+		(property "DK Part Number" "P10KBDCT-ND"
 			(at 255.27 292.1 0)
 			(effects
 				(font
@@ -69482,7 +69728,7 @@
 				)
 			)
 		)
-		(property "Value" "74ALVCH16373DGG:11"
+		(property "Value" "SN74ALVCH16374DGGR"
 			(at 266.7 330.2 90)
 			(effects
 				(font
@@ -69517,7 +69763,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "https://www.digikey.com/en/products/detail/nexperia-usa-inc/74ALVCH16373DGG-11/2228810"
+		(property "Order Link" ""
 			(at 266.7 336.55 0)
 			(effects
 				(font
@@ -69526,7 +69772,7 @@
 				(hide yes)
 			)
 		)
-		(property "DK Part Number" "1727-8378-1-ND"
+		(property "DK Part Number" "296-1144-1-ND"
 			(at 266.7 336.55 0)
 			(effects
 				(font
@@ -70276,6 +70522,102 @@
 		)
 	)
 	(symbol
+		(lib_id "Device:R")
+		(at 53.34 381 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "df569525-7cb2-4dd6-9feb-9bd0709d4a7b")
+		(property "Reference" "R2"
+			(at 51.435 382.27 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "140k"
+			(at 53.34 383.54 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
+			(at 51.562 381 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 53.34 381 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 53.34 381 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Is Good" "y"
+			(at 53.34 381 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Order Link" ""
+			(at 53.34 381 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DK Part Number" "A124703CT-ND"
+			(at 53.34 381 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "700eb533-0264-45a6-b856-db804d352a75")
+		)
+		(pin "2"
+			(uuid "54b1a922-6d62-490e-8eed-8d3ff4bd943a")
+		)
+		(instances
+			(project "Open Beam Interface"
+				(path "/39dd4815-2a60-44cf-8871-b7872a24db88"
+					(reference "R2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "power:GNDA")
 		(at 101.6 220.98 0)
 		(unit 1)
@@ -70413,7 +70755,7 @@
 				(hide yes)
 			)
 		)
-		(property "Is Good" "y"
+		(property "Is Good" ""
 			(at 71.12 335.28 0)
 			(effects
 				(font
@@ -71125,7 +71467,7 @@
 				(hide yes)
 			)
 		)
-		(property "Is Good" "y"
+		(property "Is Good" ""
 			(at 71.12 260.35 0)
 			(effects
 				(font
@@ -72419,7 +72761,7 @@
 				(hide yes)
 			)
 		)
-		(property "Is Good" "Y"
+		(property "Is Good" "y"
 			(at 154.94 381 0)
 			(effects
 				(font
@@ -72428,7 +72770,16 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "Assortment"
+		(property "Order Link" ""
+			(at 154.94 381 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DK Part Number" "A124703CT-ND"
 			(at 154.94 381 0)
 			(effects
 				(font
@@ -72764,7 +73115,7 @@
 				(hide yes)
 			)
 		)
-		(property "Is Good" "Y"
+		(property "Is Good" "y"
 			(at 165.1 339.09 0)
 			(effects
 				(font
@@ -72773,7 +73124,16 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "Assortment"
+		(property "Order Link" ""
+			(at 165.1 339.09 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DK Part Number" "P10KBDCT-ND"
 			(at 165.1 339.09 0)
 			(effects
 				(font
@@ -72899,7 +73259,7 @@
 				)
 			)
 		)
-		(property "Value" "12.1k"
+		(property "Value" "14.3k"
 			(at 560.07 281.94 90)
 			(effects
 				(font
@@ -72934,7 +73294,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "Assortment"
+		(property "Order Link" ""
 			(at 560.07 281.94 0)
 			(effects
 				(font
@@ -72943,7 +73303,7 @@
 				(hide yes)
 			)
 		)
-		(property "DK Part Number" ""
+		(property "DK Part Number" "A140153CT-ND"
 			(at 560.07 281.94 0)
 			(effects
 				(font
@@ -73246,7 +73606,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "https://www.digikey.com/en/products/detail/te-connectivity-passive-product/CRG0603ZR/2380828"
+		(property "Order Link" ""
 			(at 447.04 72.39 0)
 			(effects
 				(font
@@ -73691,7 +74051,7 @@
 				(hide yes)
 			)
 		)
-		(property "Is Good" "y"
+		(property "Is Good" ""
 			(at 73.66 158.75 0)
 			(effects
 				(font
@@ -73902,7 +74262,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "https://www.digikey.com/en/products/detail/amphenol-rf/031-5538-10RFX/2041817"
+		(property "Order Link" ""
 			(at 515.62 193.04 0)
 			(effects
 				(font
@@ -74852,7 +75212,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "https://www.digikey.com/en/products/detail/panasonic-electronic-components/ERJ-3GEY0R00V/135656"
+		(property "Order Link" ""
 			(at 365.76 69.85 0)
 			(effects
 				(font
@@ -74967,7 +75327,7 @@
 				(hide yes)
 			)
 		)
-		(property "Is Good" "y"
+		(property "Is Good" ""
 			(at 73.66 130.81 0)
 			(effects
 				(font
@@ -76003,7 +76363,7 @@
 				)
 			)
 		)
-		(property "Value" "18.7k"
+		(property "Value" "22.1k"
 			(at 562.61 275.59 90)
 			(effects
 				(font
@@ -76038,7 +76398,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "Assortment"
+		(property "Order Link" ""
 			(at 562.61 275.59 0)
 			(effects
 				(font
@@ -76047,7 +76407,7 @@
 				(hide yes)
 			)
 		)
-		(property "DK Part Number" ""
+		(property "DK Part Number" "A140455CT-ND"
 			(at 562.61 275.59 0)
 			(effects
 				(font
@@ -76476,7 +76836,7 @@
 				(hide yes)
 			)
 		)
-		(property "Order Link" "https://www.digikey.com/en/products/detail/vishay-dale/TNPU0603500RAZEN00/6615936"
+		(property "Order Link" ""
 			(at 513.08 321.31 0)
 			(effects
 				(font

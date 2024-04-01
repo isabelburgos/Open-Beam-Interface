@@ -609,7 +609,7 @@
           "show": true
         },
         {
-          "group_by": false,
+          "group_by": true,
           "label": "Value",
           "name": "Value",
           "show": true
@@ -645,22 +645,22 @@
           "show": false
         },
         {
-          "group_by": false,
+          "group_by": true,
           "label": "DK Part Number",
           "name": "DK Part Number",
-          "show": false
+          "show": true
         },
         {
           "group_by": false,
           "label": "Is Good",
           "name": "Is Good",
-          "show": false
+          "show": true
         },
         {
           "group_by": false,
           "label": "Order Link",
           "name": "Order Link",
-          "show": false
+          "show": true
         },
         {
           "group_by": false,
