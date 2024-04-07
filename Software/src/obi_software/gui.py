@@ -92,6 +92,18 @@ class DebugSettings(QHBoxLayout):
         self.addWidget(self.interrupt_btn)
 
 
+def _start_async():
+    loop = asyncio.new_event_loop()
+    threading.Thread(target=loop.run_forever).start()
+    return loop
+
+_loop = _start_async()
+
+def submit_async(awaitable):
+    return asyncio.run_coroutine_threadsafe(awaitable, _loop)
+
+def stop_async():
+    _loop.call_soon_threadsafe(_loop.stop)
 class Window(QVBoxLayout):
     def __init__(self,debug=False):
         super().__init__()
@@ -170,11 +182,18 @@ class Window(QVBoxLayout):
     def save_image(self):
         self.fb.current_frame.saveImage_tifffile()
 
-    @asyncSlot()
-    async def capture_single_frame(self):
-        await self.fb.set_ext_ctrl(1)
-        await self.capture_frame()
-        await self.fb.set_ext_ctrl(0)
+    def capture_single_frame(self):
+        # await self.fb.set_ext_ctrl(1)
+        # await self.capture_frame()
+        # await self.fb.set_ext_ctrl(0)
+        print("Hello")
+        x_range, y_range, dwell, latency = self.parameters
+        self.db.prepare_display(x_range, y_range, dwell=dwell, latency=latency)
+        submit_async(self.fb.capture_single_frame(x_range, y_range, dwell=dwell, latency=latency))
+        print("submitted async")
+        print("starting thread")
+        threading.Thread(group=None, target=self.display_frame).start()
+        
 
     async def capture_frame(self):
         x_range, y_range, dwell, latency = self.parameters
@@ -182,12 +201,14 @@ class Window(QVBoxLayout):
         #     self.display_image(frame.as_uint8())
         self.db.prepare_display(x_range, y_range, dwell=dwell, latency=latency)
         await self.fb.capture_frame(x_range, y_range, dwell=dwell, latency=latency)
-        # threading.Thread(group=None, target=self.display_frame).start()
-        self.display_frame()
+        threading.Thread(group=None, target=self.display_frame).start()
+        # self.display_frame()
     
     def display_frame(self):
+        print("display_frame")
+        while self.fb.queue.qsize() == 0:
+            print(f"{self.fb.queue.qsize()=}, waiting")
         while self.fb.queue.qsize() > 0:
-            print("Hello")
             print(f"{self.fb.queue.qsize()=}")
             chunk = self.fb.queue.get()
             for frame in self.db.display_image(chunk):
@@ -199,15 +220,15 @@ class Window(QVBoxLayout):
     @asyncSlot()
     async def capture_live(self):
         if self.settings.live_capture_btn.isChecked():
-            await self.fb.set_ext_ctrl(1)
+            # await self.fb.set_ext_ctrl(1)
             self.fb._interrupt.clear()
             self.settings.disable_input()
             self.settings.live_capture_btn.setText("Stop Live Scan")
-            while True:
-                await self.capture_frame()
-                if self.fb._interrupt.is_set():
-                    break
-            await self.fb.set_ext_ctrl(0)
+            # while True:
+            #     await self.capture_frame()
+            #     if self.fb._interrupt.is_set():
+            #         break
+            # await self.fb.set_ext_ctrl(0)
         else:
             self.fb._interrupt.set()
             self.settings.live_capture_btn.setText("Start Live Scan")
@@ -245,19 +266,21 @@ class Window(QVBoxLayout):
 def run_gui():
     app = QApplication(sys.argv)
 
-    event_loop = QEventLoop(app)
-    asyncio.set_event_loop(event_loop)
+    # event_loop = QEventLoop(app)
+    # asyncio.set_event_loop(event_loop)
 
-    app_close_event = asyncio.Event()
-    app.aboutToQuit.connect(app_close_event.set)
+    # app_close_event = asyncio.Event()
+    # app.aboutToQuit.connect(app_close_event.set)
 
     w = QWidget()
     window = Window(debug=args.debug)
     w.setLayout(window)
     w.show()
+    pg.exec()
+    stop_async()
 
-    with event_loop:
-        event_loop.run_until_complete(app_close_event.wait())
+    # with event_loop:
+    #     event_loop.run_until_complete(app_close_event.wait())
 
 
 if __name__ == "__main__":
