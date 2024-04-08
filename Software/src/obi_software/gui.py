@@ -178,7 +178,11 @@ class Window(QVBoxLayout):
     def display_image(self, array):
         x_width, y_height = array.shape
         print(array)
-        self.image_display.setImage(y_height, x_width, array)
+        print(f"{array.shape=}")
+        try:
+            self.image_display.setImage(y_height, x_width, array)
+        except Exception as e:
+            print(f"error: {e}")
 
     def save_image(self):
         self.fb.current_frame.saveImage_tifffile()
@@ -196,38 +200,44 @@ class Window(QVBoxLayout):
         threading.Thread(group=None, target=self.display_frame).start()
         
 
-    async def capture_frame(self):
-        x_range, y_range, dwell, latency = self.parameters
-        # async for frame in self.fb.capture_frame(x_range, y_range, dwell=dwell, latency=latency):
-        #     self.display_image(frame.as_uint8())
-        self.db.prepare_display(x_range, y_range, dwell=dwell, latency=latency)
-        await self.fb.capture_frame(x_range, y_range, dwell=dwell, latency=latency)
-        threading.Thread(group=None, target=self.display_frame).start()
-        # self.display_frame()
+    # async def capture_frame(self):
+    #     x_range, y_range, dwell, latency = self.parameters
+    #     # async for frame in self.fb.capture_frame(x_range, y_range, dwell=dwell, latency=latency):
+    #     #     self.display_image(frame.as_uint8())
+    #     self.db.prepare_display(x_range, y_range, dwell=dwell, latency=latency)
+    #     await self.fb.capture_frame(x_range, y_range, dwell=dwell, latency=latency)
+    #     threading.Thread(group=None, target=self.display_frame).start()
+    #     # self.display_frame()
     
     def display_frame(self):
         print("display_frame started")
         # while self.fb.queue.qsize() == 0:
         #     print(f"{self.fb.queue.qsize()=}, waiting")
         # while self.fb.queue.qsize() > 0:
-        while not self.db.interrupt.is_set():
+        while not self.db._interrupt.is_set():
             if self.fb.queue.qsize() > 0:
                 print(f"{self.fb.queue.qsize()=}")
                 chunk = self.fb.queue.get()
                 for frame in self.db.display_frame_partial(chunk):
                     # self.image_display.showTest()
-                    print(frame)
                     self.display_image(frame.as_uint8())
                 self.fb.queue.task_done()
         print("display_frame interrupted")
 
-
-    @asyncSlot()
-    async def capture_live(self):
+    def capture_live(self):
+        print("capture live")
         if self.settings.live_capture_btn.isChecked():
+            print("starting live scan")
             # await self.fb.set_ext_ctrl(1)
             self.fb._interrupt.clear()
+            self.db._interrupt.clear()
             self.settings.disable_input()
+            x_range, y_range, dwell, latency = self.parameters
+            self.db.prepare_display(x_range, y_range, dwell=dwell, latency=latency)
+            submit_async(self.fb.capture_frames_continously(x_range, y_range, dwell=dwell, latency=latency))
+            print("submitted async")
+            print("starting thread")
+            threading.Thread(group=None, target=self.display_frame).start()
             self.settings.live_capture_btn.setText("Stop Live Scan")
             # while True:
             #     await self.capture_frame()
@@ -236,6 +246,7 @@ class Window(QVBoxLayout):
             # await self.fb.set_ext_ctrl(0)
         else:
             self.fb._interrupt.set()
+            self.db._interrupt.set()
             self.settings.live_capture_btn.setText("Start Live Scan")
             self.settings.enable_input()
 
@@ -282,7 +293,7 @@ def run_gui():
     w.setLayout(window)
     w.show()
     pg.exec()
-    window.db.interrupt.set()
+    window.db._interrupt.set()
     stop_async()
 
     # with event_loop:
