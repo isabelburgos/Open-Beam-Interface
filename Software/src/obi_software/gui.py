@@ -1,5 +1,5 @@
 import threading
-import queue
+from queue import Queue
 import argparse
 import pathlib
 import tomllib
@@ -14,8 +14,9 @@ from PyQt6.QtWidgets import (QHBoxLayout, QMainWindow,
 import qasync
 from qasync import asyncSlot, asyncClose, QApplication, QEventLoop
 
-from .beam_interface import Connection, DACCodeRange
-from .frame_buffer import FrameBuffer, DisplayBuffer
+from .beam_interface import *
+from .ui_interface import *
+from .threads import *
 from .gui_modules.image_display import ImageDisplay
 from .gui_modules.settings import SettingBox, SettingBoxWithDefaults
 
@@ -91,32 +92,17 @@ class DebugSettings(QHBoxLayout):
         self.interrupt_btn = QPushButton("Interrupt")
         self.addWidget(self.interrupt_btn)
 
-
-def _start_async():
-    loop = asyncio.new_event_loop()
-    threading.Thread(target=loop.run_forever).start()
-    return loop
-
-_loop = _start_async()
-
-def submit_async(awaitable):
-    return asyncio.run_coroutine_threadsafe(awaitable, _loop)
-
-def stop_async():
-    _loop.call_soon_threadsafe(_loop.stop)
 class Window(QVBoxLayout):
-    def __init__(self,debug=False):
+    def __init__(self,iface, debug=False):
         super().__init__()
         self.debug = debug
         self.config = tomllib.load(open(args.config_path, "rb") )
-        self.conn = Connection('localhost', int(args.port))
-        self.fb = FrameBuffer(self.conn)
-        self.db = DisplayBuffer()
+        self.iface = iface
 
         self.settings = Settings()
         self.addLayout(self.settings)
         self.settings.single_capture_btn.clicked.connect(self.capture_single_frame)
-        self.settings.live_capture_btn.clicked.connect(self.capture_live)
+        # self.settings.live_capture_btn.clicked.connect(self.capture_live)
         self.settings.save_btn.clicked.connect(self.save_image)
         self.image_display = ImageDisplay(512,512)
         self.addWidget(self.image_display)
@@ -140,9 +126,7 @@ class Window(QVBoxLayout):
             latency = self.debug_settings.latency.getval()
         else:
             latency = 65536
-        x_range = DACCodeRange(0, x_res, int((16384/x_res)*256))
-        y_range = DACCodeRange(0, y_res, int((16384/y_res)*256))
-        return x_range, y_range, dwell, latency
+        return x_res, y_res, dwell, latency
     
     def toggle_measure(self):
         if self.image_data.measure_btn.isChecked():
@@ -182,83 +166,17 @@ class Window(QVBoxLayout):
         try:
             self.image_display.setImage(y_height, x_width, array, y_ptr)
         except Exception as e:
-            print(f"error: {e}")
+            print(f"display error: {e}")
 
     def save_image(self):
         self.fb.current_frame.saveImage_tifffile()
 
     def capture_single_frame(self):
-        # await self.fb.set_ext_ctrl(1)
-        # await self.capture_frame()
-        # await self.fb.set_ext_ctrl(0)
-        print("Hello")
         x_range, y_range, dwell, latency = self.parameters
-        self.db.prepare_display(x_range, y_range, dwell=dwell, latency=latency)
-        submit_async(self.fb.capture_single_frame(x_range, y_range, dwell=dwell, latency=latency))
-        print("submitted async")
-        print("starting thread")
-        threading.Thread(group=None, target=self.display_frame).start()
-        
+        frame = self.iface.capture_frame(x_range, y_range, dwell)
+        self.display_image(frame.as_uint8(), frame.y_ptr)
 
-    # async def capture_frame(self):
-    #     x_range, y_range, dwell, latency = self.parameters
-    #     # async for frame in self.fb.capture_frame(x_range, y_range, dwell=dwell, latency=latency):
-    #     #     self.display_image(frame.as_uint8())
-    #     self.db.prepare_display(x_range, y_range, dwell=dwell, latency=latency)
-    #     await self.fb.capture_frame(x_range, y_range, dwell=dwell, latency=latency)
-    #     threading.Thread(group=None, target=self.display_frame).start()
-    #     # self.display_frame()
-    
-    def display_frame(self):
-        print("display_frame started")
-        # while self.fb.queue.qsize() == 0:
-        #     print(f"{self.fb.queue.qsize()=}, waiting")
-        # while self.fb.queue.qsize() > 0:
-        credit = "credit"
-        for n in range(8):
-            self.fb.credits.put(credit) ## fill the queue
-        while not self.db._interrupt.is_set():
-            if self.fb.queue.qsize() > 0:
-                print(f"{self.fb.queue.qsize()=}, {self.fb.credits.qsize()=}")
-                chunk = self.fb.queue.get()
-                for frame in self.db.display_frame_partial(chunk):
-                    # self.image_display.showTest()
-                    self.display_image(frame.as_uint8(), frame.y_ptr)
-                self.fb.credits.put("credit")
-                self.fb.queue.task_done()
-                print(f"put credit. {self.fb.queue.qsize()=}, {self.fb.credits.qsize()=}")
-        print("display_frame interrupted")
-        while not self.fb.credits.empty():
-            print(f"{self.fb.queue.qsize()=}")
-            chunk = self.fb.queue.get()
-            for frame in self.db.display_frame_partial(chunk):
-                # self.image_display.showTest()
-                self.display_image(frame.as_uint8(), frame.y_ptr)
-            self.fb.queue.task_done()
-            print(f"~put credit. {self.fb.queue.qsize()=}, {self.fb.credits.qsize()=}")
-        print("display_frame complete")
 
-    def capture_live(self):
-        if self.settings.live_capture_btn.isChecked():
-            print("starting live scan")
-            # self.fb._interrupt.clear()
-            self.db._interrupt.clear()
-            self.settings.disable_input()
-            x_range, y_range, dwell, latency = self.parameters
-            self.db.prepare_display(x_range, y_range, dwell=dwell, latency=latency)
-            submit_async(self.fb.capture_frames_continously(x_range, y_range, dwell=dwell, latency=latency))
-            threading.Thread(group=None, target=self.display_frame).start()
-            self.settings.live_capture_btn.setText("Stop Live Scan")
-        else:
-            # self.fb._interrupt.set()
-            self.db._interrupt.set()
-            self.settings.live_capture_btn.setText("Start Live Scan")
-            self.settings.enable_input()
-
-    def interrupt(self):
-        self.fb._interrupt.set()
-        if self.debug:
-            self.conn._interrupt_scan()
 
     #### Debug settings
     @asyncSlot()
@@ -284,7 +202,12 @@ class Window(QVBoxLayout):
         print("Concluded gui.free_scan")
 
 
-def run_gui():
+def run_gui_thread(in_queue, out_queue):
+    print("run gui thread")
+    loop = asyncio.new_event_loop()
+    worker = UIThreadWorker(in_queue, out_queue, loop)
+    iface = OBIInterface(worker)
+
     app = QApplication(sys.argv)
 
     # event_loop = QEventLoop(app)
@@ -294,16 +217,29 @@ def run_gui():
     # app.aboutToQuit.connect(app_close_event.set)
 
     w = QWidget()
-    window = Window(debug=args.debug)
+    window = Window(iface=iface, debug=args.debug)
     w.setLayout(window)
+    print("show window!")
     w.show()
     pg.exec()
-    window.db._interrupt.set()
-    stop_async()
 
     # with event_loop:
     #     event_loop.run_until_complete(app_close_event.wait())
 
 
+def run_gui():
+    ui_to_con = Queue()
+    con_to_ui = Queue()
+
+    # ui = threading.Thread(target = run_gui_thread, args = [con_to_ui, ui_to_con])
+    con = threading.Thread(target = conn_thread, args = [ui_to_con, con_to_ui])
+
+    # ui.start()
+    con.start()
+    run_gui_thread(con_to_ui, ui_to_con)
+    
+
 if __name__ == "__main__":
     run_gui()
+
+
