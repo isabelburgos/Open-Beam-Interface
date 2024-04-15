@@ -8,3 +8,5 @@ Gateware/open_beam_interface.bin
 *.zip
 *.png
 *.pyc
+*.tif
+*.pdm-python
