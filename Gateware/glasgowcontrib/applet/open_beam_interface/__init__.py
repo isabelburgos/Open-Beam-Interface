@@ -236,7 +236,14 @@ class BusController(wiring.Component):
                     self.bus.data_oe.eq(1),
                     self.bus.dac_y_le_clk.eq(1),
                 ]
+                # with m.If(self.dac_stream_data.delay_cycles != 0):
+                #     m.d.sync += delay_cycles.eq(self.dac_stream_data.delay_cycles)
+                #     m.next = "Delay_Cycles"
+                # with m.Else():
                 m.next = "ADC_Wait"
+            
+            # with m.State("Delay_Cycles"):
+            #     m.d.sync += delay_cycles.eq(delay_cycles + 1)
 
         return m
 

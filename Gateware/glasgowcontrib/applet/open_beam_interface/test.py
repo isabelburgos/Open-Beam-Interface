@@ -969,6 +969,16 @@ class OBIAppletTestCase(unittest.TestCase):
                 # for n in range(1,10):
                 #     await iface.write(VectorPixelCommand(x_coord=2*n, y_coord=2*n, dwell=4).message)
 
+            @applet_simulation_test("setup_test", args=["--pin-ext-ibeam-scan-enable", "0", "--pin-ext-ibeam-scan-enable-2", "1"])
+            async def test_vector_delay(self):
+                iface = await self.run_simulated_applet()
+                await iface.write(SynchronizeCommand(cookie=4, output=2, raster=0).message)
+                await iface.write(VectorPixelCommand(x_coord=7, y_coord=6, dwell=10).message)
+                await iface.write(DelayCommand(delay=1).message)
+                await iface.write(VectorPixelCommand(x_coord=6, y_coord=7, dwell=9).message)
+                await iface.read(4)
+
+
                 
 
             
@@ -979,6 +989,7 @@ class OBIAppletTestCase(unittest.TestCase):
         test_case.test_raster()
         test_case.test_benchmark()
         test_case.test_vector_blank()
+        test_case.test_vector_delay()
         # test_case.test_loopback()
 
         
