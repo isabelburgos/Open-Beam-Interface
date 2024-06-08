@@ -42,7 +42,7 @@ class Transforms(data.Struct):
     rotate90: 1
 
 
-class CmdType(enum.Enum, shape=5):
+class CmdType(enum.Enum, shape=4):
         Synchronize         = 0
         Abort               = 1
         Flush               = 2
@@ -64,8 +64,8 @@ class Command(data.Struct):
 
     # Only used for transfer via USB, where the command is split into octets.
     class Header(data.Struct):
-        type: CmdType
         payload: 8 - Shape.cast(CmdType).width
+        type: CmdType
 
     PAYLOAD_SIZE = { # type -> bytes
         CmdType.Synchronize: 2,
@@ -96,7 +96,7 @@ class Command(data.Struct):
     type: CmdType
     payload: data.UnionLayout({
         "synchronize": data.StructLayout({
-            "reserved": 0,
+            "reserved": 1,
             "payload": data.StructLayout({
                 "mode": data.StructLayout({
                     "raster": 1,
@@ -245,22 +245,12 @@ class SynchronizeCommand(BaseCommand):
         self._output = output
 
     def __repr__(self):
-        return f"SynchronizeCommand(cookie={self._cookie}, raster={self._raster}, outpute={self._output})"
+        return f"SynchronizeCommand(cookie={self._cookie}, raster={self._raster}, output={self._output})"
 
     @property
     def message(self):
-        return Command.serialize(CmdType.Synchronize, 
-                payload = 
-                {"synchronize": {
-                    "reserved": 0,
-                    "payload": {
-                        "mode": {
-                            "raster": self._raster,
-                            "output": self._output
-                        },
-                        "cookie": self._cookie
-                    }    
-                }})
+        header = CmdType.Synchronize.value << 4 | self._output.value << 2 | self._raster << 1
+        return struct.pack('<BH', header, self._cookie)
     
     @property
     def test_response(self):
@@ -278,11 +268,7 @@ class AbortCommand(BaseCommand):
     
     @property
     def message(self):
-        return Command.serialize(CmdType.Abort, 
-                payload = 
-                {"abort": {
-                    "reserved": 0,  
-                }})
+        return struct.pack('B', CmdType.Abort.value << 4)
     
 class FlushCommand(BaseCommand):
     def __repr__(self):
@@ -290,11 +276,7 @@ class FlushCommand(BaseCommand):
     
     @property
     def message(self):
-        return Command.serialize(CmdType.Flush, 
-                payload = 
-                {"flush": {
-                    "reserved": 0,  
-                }})
+        return struct.pack('>B', CmdType.Flush.value << 4)
 
 class ExternalCtrlCommand(BaseCommand):
     def __init__(self, enable:bool):
@@ -305,28 +287,16 @@ class ExternalCtrlCommand(BaseCommand):
 
     @property
     def message(self):
-        return Command.serialize(CmdType.ExternalCtrl, 
-                payload = 
-                {"external_ctrl": {
-                    "reserved": 0,  
-                    "payload": {
-                        "enable": self._enable
-                    }
-                }})
+        header = CmdType.ExternalCtrl.value << 4 | self._enable << 3 
+        return struct.pack('>B', header)
 
 class BeamSelectCommand(BaseCommand):
     def __init__(self, beam_type:BeamType):
         self._beam_type = beam_type
     @property
     def message(self):
-        return Command.serialize(CmdType.BeamSelect, 
-                payload = 
-                {"beam_select": {
-                    "reserved": 0,  
-                    "payload": {
-                        "beam_type": self._beam_type
-                    }
-                }})
+        header = CmdType.BeamSelect.value << 4 | self._beam_type.value << 3 
+        return struct.pack('>B', header)
 
 class BlankCommand(BaseCommand):
     def __init__(self, enable:bool=True, inline: bool=False):
@@ -338,15 +308,8 @@ class BlankCommand(BaseCommand):
 
     @property
     def message(self):
-        return Command.serialize(CmdType.Blank, 
-                payload = 
-                {"blank": {
-                    "reserved": 0,
-                    "payload": {
-                        "enable": self._enable,
-                        "inline": self._inline
-                    }    
-                }})
+        header = CmdType.Blank.value << 4 | self._enable << 3 | self._inline << 2
+        return struct.pack('>B', header)
 
 
 class DelayCommand(BaseCommand):
@@ -359,12 +322,7 @@ class DelayCommand(BaseCommand):
 
     @property
     def message(self):
-        return Command.serialize(CmdType.Delay, 
-                payload = 
-                {"delay": {
-                    "reserved": 3,
-                    "payload": {"delay": self._delay},  
-                }})
+        return struct.pack('>BH', CmdType.Delay.value, self._delay)
 
 
 
@@ -382,26 +340,9 @@ class RasterRegionCommand(BaseCommand):
 
     @property
     def message(self):
-        return Command.serialize(CmdType.RasterRegion, 
-                payload = 
-                {"raster_region": {
-                    "reserved": 0,
-                    "payload": {
-                        "transform": {
-                            "xflip": self._xflip,
-                            "yflip": self._yflip,
-                            "rotate90": self._rotate90,
-                        },
-                        "roi": {
-                            "x_start": self._x_range.start,
-                            "x_count": self._x_range.count,
-                            "x_step": self._x_range.step,
-                            "y_start": self._y_range.start,
-                            "y_count": self._y_range.count,
-                            "y_step": self._y_range.step
-                        }
-                    }    
-                }})
+        header = CmdType.RasterRegion.value << 4 | self._xflip << 3 | self._yflip << 2 | self._rotate90 << 1
+        return struct.pack('>BHHHHHH', header, self._x_range.start, self._x_range.count, self._x_range.step,
+                                        self._y_range.start, self._y_range.count, self._y_range.step)
 
 class RasterPixelRunCommand(BaseCommand):
     def __init__(self, *, dwell: int, length: int):
@@ -416,15 +357,7 @@ class RasterPixelRunCommand(BaseCommand):
         commands = bytearray()
         def append_command(run_length):
             nonlocal commands
-            cmd = Command.serialize(CmdType.RasterPixelRun, 
-                payload = 
-                {"raster_pixel_run": {
-                    "reserved": 0,
-                    "payload": {
-                        "length": run_length - 1,
-                        "dwell_time": self._dwell
-                    }    
-                }})
+            cmd = struct.pack('>BHH', CmdType.RasterPixelRun.value, run_length, self._dwell)
             commands.extend(cmd)
 
         pixel_count = 0
@@ -467,14 +400,7 @@ class RasterPixelFreeRunCommand(BaseCommand):
 
     @property
     def message(self):
-        return Command.serialize(CmdType.RasterPixelFreeRun, 
-                payload = 
-                {"raster_pixel_free_run": {
-                    "reserved": 0,
-                    "payload": {
-                        "dwell_time": self._dwell
-                    }    
-                }})
+        return struct.pack('>BHH', CmdType.RasterPixelFreeRun.value, self._dwell)
 
 class VectorPixelCommand(BaseCommand):
     def __init__(self, *, x_coord: int, y_coord: int, dwell: DwellTime,
@@ -495,40 +421,13 @@ class VectorPixelCommand(BaseCommand):
     @property
     def message(self):
         if self._dwell == 0:
-            return Command.serialize(CmdType.VectorPixelMinDwell, 
-                    payload = 
-                    {"vector_pixel_min": {
-                        "reserved": 0,
-                        "payload": {
-                            "transform": {
-                                "xflip": self._xflip,
-                                "yflip": self._yflip,
-                                "rotate90": self._rotate90,
-                            },
-                        "dac_stream": {
-                            "x_coord": self._x_coord,
-                            "y_coord": self._y_coord,
-                            }
-                        }    
-                    }})
+            header = CmdType.VectorPixelMinDwell.value << 4 | self._xflip << 3 | self._yflip << 2 | self._rotate90 << 1
+            return struct.pack('>BHH', header, self._x_coord, self._y_coord)
+
         else:
-            return Command.serialize(CmdType.VectorPixel, 
-                    payload = 
-                    {"vector_pixel": {
-                        "reserved": 0,
-                        "payload": {
-                            "transform": {
-                                "xflip": self._xflip,
-                                "yflip": self._yflip,
-                                "rotate90": self._rotate90,
-                            },
-                            "dac_stream": {
-                            "x_coord": self._x_coord,
-                            "y_coord": self._y_coord,
-                            "dwell_time": self._dwell
-                            }
-                        }    
-                    }})
+            header = CmdType.VectorPixel.value << 4 | self._xflip << 3 | self._yflip << 2 | self._rotate90 << 1
+            return struct.pack('>BHH', header, self._x_coord, self._y_coord, self._dwell)
+
     @property
     def test_response(self):
         res = array.array('H', [self.x_coord])
@@ -550,13 +449,7 @@ class RasterPixelsCommand(BaseCommand):
         commands = bytearray()
         def append_command(chunk):
             nonlocal commands
-            cmd = Command.serialize(CmdType.RasterPixel, 
-                payload = 
-                {"raster_pixel": {
-                    "reserved": 0,
-                    "payload": {
-                        "length": len(chunk) - 1}    
-                }})
+            cmd = struct.pack('>BH', CmdType.RasterPixel.value, len(chunk) - 1)
             commands.extend(cmd)
             if not BIG_ENDIAN: # there is no `array.array('>H')`
                 chunk.byteswap()
