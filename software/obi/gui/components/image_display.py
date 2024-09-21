@@ -19,6 +19,10 @@ from PyQt6.QtCore import QPointF
 
 from rich import print
 
+ROI_BORDER = pg.mkPen(color = "#00ff00", width = 2)
+ROI_HANDLE = pg.mkPen(color = "#00ff00", width = 5)
+ROI_HANDLE_HOVER = pg.mkPen(color = "#00ff00", width = 8)
+
 class ALine(pg.LineSegmentROI):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -167,9 +171,8 @@ class ImageDisplay(pg.GraphicsLayoutWidget):
         policy.setWidthForHeight(True)
         return policy
     def add_ROI(self):
-        border = pg.mkPen(color = "#00ff00", width = 2)
         # Custom ROI for selecting an image region
-        self.roi = pg.ROI([int(.25*self.x_width), int(.25*self.y_height)], [int(.5*self.x_width), int(.5*self.y_height)], pen = border, handlePen=border,
+        self.roi = pg.ROI([int(.25*self.x_width), int(.25*self.y_height)], [int(.5*self.x_width), int(.5*self.y_height)], pen = ROI_BORDER, handlePen=ROI_BORDER,
                         scaleSnap = True, translateSnap = True)
         self.roi.addScaleHandle([1, 1], [0, 0])
         self.roi.addScaleHandle([0, 0], [1, 1])
@@ -177,6 +180,44 @@ class ImageDisplay(pg.GraphicsLayoutWidget):
         self.roi.maxBounds = QtCore.QRectF(0, 0, self.x_width, self.y_height)
         self.roi.setZValue(10)  # make sure ROI is drawn above image
     
+    def add_image_ROI(self):
+        from PIL import Image
+        im = Image.open("/Users/isabelburgos/Open-Beam-Interface/software/obi/support/nanographs_logo.bmp")
+        image_arr = np.asarray(im)
+        self.add_ROI()
+        self.img = pg.ImageItem(image_arr)
+        self.img.setParentItem(self.roi)
+    
+    def add_polyline_ROI(self):
+        ul = [int(.25*self.x_width), int(.25*self.y_height)]
+        size = [int(.5*self.x_width), int(.5*self.y_height)]
+        self.roi = pg.PolyLineROI([
+            ul, ## upper left
+            [ul[0]+size[0], ul[1]], ## upper right
+            [ul[0]+size[0], ul[1] + size[1]], #lower right
+            [ul[0], ul[1]+size[1]] #lower left
+        ],pen = ROI_BORDER, handlePen=ROI_HANDLE, handleHoverPen=ROI_HANDLE_HOVER, scaleSnap = True, translateSnap = True, closed=True)
+        # self.roi.addScaleHandle([1, 1], [0, 0])
+        # self.roi.addScaleHandle([0, 0], [1, 1])
+        self.image_view.addItem(self.roi)
+        self.roi.maxBounds = QtCore.QRectF(0, 0, self.x_width, self.y_height)
+        self.roi.setZValue(10)  # make sure ROI is drawn above image
+    
+    
+    def add_multirect_ROI(self):
+        ul = [int(.25*self.x_width), int(.25*self.y_height)]
+        size = [int(.5*self.x_width), int(.5*self.y_height)]
+        self.roi = pg.MultiRectROI([
+            ul, ## upper left
+            [ul[0]+size[0], ul[1]], ## upper right
+        ], size[0], pen = ROI_BORDER, handlePen=ROI_HANDLE, handleHoverPen=ROI_HANDLE_HOVER, scaleSnap = True, translateSnap = True, rotatable=False)
+        # self.roi.addScaleHandle([1, 1], [0, 0])
+        # self.roi.addScaleHandle([0, 0], [1, 1])
+        self.image_view.addItem(self.roi)
+        self.roi.maxBounds = QtCore.QRectF(0, 0, self.x_width, self.y_height)
+        self.roi.setZValue(10)  # make sure ROI is drawn above image
+    
+
     def add_line(self, start=None, end=None):
         if start == None:
             start  = [.25*self.x_width, .25*self.y_height]
@@ -258,12 +299,37 @@ class ImageDisplay(pg.GraphicsLayoutWidget):
 
 
 if __name__ == "__main__":
+    from shapely.geometry import Polygon
+    from geo_rasterize import rasterize
     app = pg.mkQApp()
+    w = QWidget()
+    l = QVBoxLayout()
+    w.setLayout(l)
     image_display = ImageDisplay(512, 512)
     image_display.showTest()
     #image_display.add_ROI()
     #image_display.remove_ROI()
     #image_display.add_double_lines()
-    image_display.show()
+    #image_display.add_image_ROI()
+    image_display.add_polyline_ROI()
+    #image_display.add_multirect_ROI()
+    #image_display.show()
+    l.addWidget(image_display)
+    w.btn = QPushButton("hi")
+    def fn():
+        r = image_display.roi.getHandles()
+        points = []
+        for handle in r:
+            pos = handle.pos()
+            points.append((pos.x(), pos.y()))
+            print(pos.x(), pos.y())
+        p = Polygon(points)
+        f = rasterize([p], [255], (image_display.x_width, image_display.y_height))
+        print(f.shape)
+        image_display.setImage(f)
+    #w.btn.clicked.connect(fn)
+    #l.addWidget(w.btn)
+    image_display.roi.sigRegionChanged.connect(fn)
+    w.show()
     
     pg.exec()
