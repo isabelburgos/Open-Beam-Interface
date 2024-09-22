@@ -1,5 +1,7 @@
 import numpy as np
 import math
+from shapely.geometry import Polygon
+from geo_rasterize import rasterize
 
 import pyqtgraph as pg
 from pyqtgraph.graphicsItems.TextItem import TextItem
@@ -124,3 +126,10 @@ class PatternPolyLineROI(pg.PolyLineROI):
             translateSnap = True, 
             closed=True
         )
+    def rasterize(self, x_width, y_height) -> np.ndarray:
+        handles = self.getHandles()
+        points = []
+        for handle in handles:
+            pos = handle.pos()
+            points.append((pos.x(), pos.y()))
+        return rasterize([Polygon(points)], [255], (x_width, y_height), dtype='uint8')
