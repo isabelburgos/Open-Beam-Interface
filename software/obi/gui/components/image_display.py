@@ -19,86 +19,8 @@ from PyQt6.QtCore import QPointF
 
 from rich import print
 
-ROI_BORDER = pg.mkPen(color = "#00ff00", width = 2)
-ROI_HANDLE = pg.mkPen(color = "#00ff00", width = 5)
-ROI_HANDLE_HOVER = pg.mkPen(color = "#00ff00", width = 8)
+from .roi import LiveRectangleROI, PatternPolyLineROI, MeasureLine, ParallelMeasureLines
 
-class ALine(pg.LineSegmentROI):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-    @staticmethod
-    def parse_points(points):
-        x1 = points[0][1].x()
-        y1 = points[0][1].y()
-        x2 = points[1][1].x()
-        y2 = points[1][1].y()
-        return (x1, y1), (x2, y2)
-    @property
-    def local_endpoints(self):
-        points = self.getLocalHandlePositions()
-        return self.parse_points(points)
-    @property
-    def scene_endpoints(self):
-        points = self.getSceneHandlePositions()
-        return self.parse_points(points)
-    @staticmethod
-    def length_angle(p1, p2):
-        d = math.sqrt(pow(p1[0] - p2[0],2) + pow(p1[1] - p2[1],2))
-        if p2[0] != p1[0]:
-            m = (p2[1] - p1[1])/(p2[0] - p1[0])
-            a = math.degrees(math.atan(m))
-        else:
-            a = 0
-        return d, a
-
-class DoubleLines(pg.GraphicsObject):
-    sigRegionChanged = pyqtSignal(float)
-    def __init__(self):
-        super().__init__()
-
-        x_width = y_height = 512
-        start  = [.25*x_width, .25*y_height]
-        end = [start[0] + .25*x_width, start[1]]
-
-        self.lines = pg.LinearRegionItem(values=(start[0], end[0]), movable=False)
-        self.lines.setParentItem(self)
-        
-        border = pg.mkPen(color = "#00ff00", width = 2)
-        self.line = ALine(positions = (start,end),
-                        pen = border, handlePen=border,)
-        self.line.setParentItem(self)
-
-        self.line.sigRegionChanged.connect(self.fn)
-
-    def fn(self):
-        p1, p2 = self.line.local_endpoints
-        d, a = self.line.length_angle(p1, p2)
-
-        s1, s2 = self.line.scene_endpoints
-        image_view = self.parentItem().parentItem()
-        tr = image_view.mapViewToScene(QPointF(0,0))
-        tx, ty = tr.x(), tr.y()
-        tr_s1 = [s1[0]-tx, s1[1]-ty]
-        tr_s2 = [s2[0]-tx, s2[1]-ty]
-
-        d_s, a_s = self.line.length_angle(s1, s2)
-        scale = d/d_s
-        tr_s_s1 = [tr_s1[0]*scale, tr_s1[1]*scale]
-        tr_s_s2 = [tr_s2[0]*scale, tr_s2[1]*scale]
-
-        p1, p2 = tr_s_s1, tr_s_s2
-
-        self.lines.setTransformOriginPoint(*p1)
-        self.lines.setRotation(a)
-
-        # map to the coordinate system of the linear region
-        if p2[0] >= p1[0]:
-            p_rot = [p1[0] + d, p1[1]]
-        elif p2[0] < p1[0]: # if the lines are swapped
-            p_rot = [p1[0] - d, p1[1]]
-        
-        self.lines.setRegion([p1, p_rot])
-        self.sigRegionChanged.emit(d)
 
 class ImageDisplay(pg.GraphicsLayoutWidget):
     _logger = logger.getChild("ImageDisplay")
@@ -128,7 +50,7 @@ class ImageDisplay(pg.GraphicsLayoutWidget):
 
         self.roi = None
         self.line = None
-        self.measure_lines = DoubleLines()
+        self.measure_lines = ParallelMeasureLines(512, 512)
 
         ### reverse the default LUT
         # lut = []
@@ -170,15 +92,17 @@ class ImageDisplay(pg.GraphicsLayoutWidget):
         policy = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Maximum)
         policy.setWidthForHeight(True)
         return policy
+    
+    def setup_roi(self, roi:pg.ROI):
+        self.image_view.addItem(roi)
+        roi.maxBounds = roi.getbounds(self.x_width, self.y_height)
+        roi.setZValue(10)  # make sure ROI is drawn above image
+        roi.introduce()
+
     def add_ROI(self):
         # Custom ROI for selecting an image region
-        self.roi = pg.ROI([int(.25*self.x_width), int(.25*self.y_height)], [int(.5*self.x_width), int(.5*self.y_height)], pen = ROI_BORDER, handlePen=ROI_BORDER,
-                        scaleSnap = True, translateSnap = True)
-        self.roi.addScaleHandle([1, 1], [0, 0])
-        self.roi.addScaleHandle([0, 0], [1, 1])
-        self.image_view.addItem(self.roi)
-        self.roi.maxBounds = QtCore.QRectF(0, 0, self.x_width, self.y_height)
-        self.roi.setZValue(10)  # make sure ROI is drawn above image
+        self.roi = LiveRectangleROI(self.x_width, self.y_height)
+        self.setup_roi(self.roi)
     
     def add_image_ROI(self):
         from PIL import Image
@@ -189,34 +113,8 @@ class ImageDisplay(pg.GraphicsLayoutWidget):
         self.img.setParentItem(self.roi)
     
     def add_polyline_ROI(self):
-        ul = [int(.25*self.x_width), int(.25*self.y_height)]
-        size = [int(.5*self.x_width), int(.5*self.y_height)]
-        self.roi = pg.PolyLineROI([
-            ul, ## upper left
-            [ul[0]+size[0], ul[1]], ## upper right
-            [ul[0]+size[0], ul[1] + size[1]], #lower right
-            [ul[0], ul[1]+size[1]] #lower left
-        ],pen = ROI_BORDER, handlePen=ROI_HANDLE, handleHoverPen=ROI_HANDLE_HOVER, scaleSnap = True, translateSnap = True, closed=True)
-        # self.roi.addScaleHandle([1, 1], [0, 0])
-        # self.roi.addScaleHandle([0, 0], [1, 1])
-        self.image_view.addItem(self.roi)
-        self.roi.maxBounds = QtCore.QRectF(0, 0, self.x_width, self.y_height)
-        self.roi.setZValue(10)  # make sure ROI is drawn above image
-    
-    
-    def add_multirect_ROI(self):
-        ul = [int(.25*self.x_width), int(.25*self.y_height)]
-        size = [int(.5*self.x_width), int(.5*self.y_height)]
-        self.roi = pg.MultiRectROI([
-            ul, ## upper left
-            [ul[0]+size[0], ul[1]], ## upper right
-        ], size[0], pen = ROI_BORDER, handlePen=ROI_HANDLE, handleHoverPen=ROI_HANDLE_HOVER, scaleSnap = True, translateSnap = True, rotatable=False)
-        # self.roi.addScaleHandle([1, 1], [0, 0])
-        # self.roi.addScaleHandle([0, 0], [1, 1])
-        self.image_view.addItem(self.roi)
-        self.roi.maxBounds = QtCore.QRectF(0, 0, self.x_width, self.y_height)
-        self.roi.setZValue(10)  # make sure ROI is drawn above image
-    
+        self.roi = PatternPolyLineROI(self.x_width, self.y_height)
+        self.setup_roi(self.roi)
 
     def add_line(self, start=None, end=None):
         if start == None:
@@ -276,7 +174,7 @@ class ImageDisplay(pg.GraphicsLayoutWidget):
     def setRange(self, y_height, x_width):
         if (x_width != self.x_width) | (y_height != self.y_height):
             if not self.roi == None:
-                self.roi.maxBounds = QtCore.QRectF(0, 0, x_width, y_height)
+                self.roi.maxBounds = self.roi.getbounds(self.x_width, self.y_height)
             #self.image_view.setRange(QtCore.QRectF(0, 0, x_width, y_height))
             self.x_width = x_width
             self.y_height = y_height
@@ -292,19 +190,9 @@ class ImageDisplay(pg.GraphicsLayoutWidget):
         array = array.astype(np.uint8)
         self.setImage(array)
 
-
-
-
-
-
-
 if __name__ == "__main__":
-    from shapely.geometry import Polygon
     from geo_rasterize import rasterize
     app = pg.mkQApp()
-    w = QWidget()
-    l = QVBoxLayout()
-    w.setLayout(l)
     image_display = ImageDisplay(512, 512)
     image_display.showTest()
     #image_display.add_ROI()
@@ -312,24 +200,11 @@ if __name__ == "__main__":
     #image_display.add_double_lines()
     #image_display.add_image_ROI()
     image_display.add_polyline_ROI()
-    #image_display.add_multirect_ROI()
-    #image_display.show()
-    l.addWidget(image_display)
-    w.btn = QPushButton("hi")
-    def fn():
-        r = image_display.roi.getHandles()
-        points = []
-        for handle in r:
-            pos = handle.pos()
-            points.append((pos.x(), pos.y()))
-            print(pos.x(), pos.y())
-        p = Polygon(points)
-        f = rasterize([p], [255], (image_display.x_width, image_display.y_height))
-        print(f.shape)
-        image_display.setImage(f)
-    #w.btn.clicked.connect(fn)
-    #l.addWidget(w.btn)
-    image_display.roi.sigRegionChanged.connect(fn)
-    w.show()
-    
+    # def fn():
+    #     buf = image_display.roi.asPolygon().buffer(0)
+    #     #print(buf.is_ring)
+    #     f =  rasterize([buf], [255], (image_display.x_width, image_display.y_height), dtype='uint8')
+    #     image_display.setImage(f)
+    # image_display.roi.sigRegionChanged.connect(fn)
+    image_display.show()
     pg.exec()

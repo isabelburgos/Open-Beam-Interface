@@ -32,11 +32,15 @@ class BitmapVectorPattern:
     Args:
         path: Path to a PIL-compatible image file
     """
-    def __init__(self, path):
-        self.im = Image.open(path)
-        self.processed_im = None
+    def __init__(self, image_arr: np.ndarray):
+        self.image_arr = image_arr
         self.pattern_seq = None
     
+    @classmethod
+    def from_path(cls, path):
+        im = Image.open(path).convert("L") #TODO: handle 16 bit grayscale
+        return cls(np.asarray(im))
+
     def rescale(self, resolution:u16, max_dwell:DwellTime, invert:bool):
         """
         Rescale the image to specified resolution, upsampling or downsampling as necessary.
@@ -51,8 +55,7 @@ class BitmapVectorPattern:
             max_dwell (Dwe: Maximum dwell value
             invert: Invert grayscale levels
         """
-        im = self.im
-        im = im.convert("L") #TODO: handle 16 bit grayscale
+        im = Image.fromarray(self.image_arr)
         ## scale dwell times 
         def level_adjust(pixel_value):
             return int((pixel_value/255)*max_dwell)
@@ -70,7 +73,7 @@ class BitmapVectorPattern:
         im = im.resize((scaled_x_pixels, scaled_y_pixels), resample = Image.Resampling.NEAREST)
         print(f"input image: {x_pixels=}, {y_pixels=} -> {scaled_x_pixels=}, {scaled_y_pixels=}")
 
-        self.processed_im = im
+        self.image_arr = np.asarray(self.processed_im)
 
     def vector_convert(self, progress_fn=lambda p: print(p)): #progress fn input: int from 0 to 100
         """
@@ -78,7 +81,7 @@ class BitmapVectorPattern:
             progress_fn (function, optional): Function that accepts a value from 0 to 100 \
                 and emits a progress indicator. Defaults to :code:`lambda p:print(p)`.
         """
-        pattern_array = np.asarray(self.processed_im)
+        pattern_array = self.image_arr
         seq = bytearray()
 
         ## Prepare to unblank with beam at the first vector pixel

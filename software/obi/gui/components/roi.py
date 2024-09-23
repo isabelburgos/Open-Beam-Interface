@@ -4,6 +4,7 @@ from shapely.geometry import Polygon
 from geo_rasterize import rasterize
 
 import pyqtgraph as pg
+from pyqtgraph.Qt import QtCore
 from pyqtgraph.graphicsItems.TextItem import TextItem
 
 from PyQt6.QtWidgets import (QHBoxLayout, QMainWindow,
@@ -12,6 +13,8 @@ from PyQt6.QtWidgets import (QHBoxLayout, QMainWindow,
                              QSpinBox, QSizePolicy)
 from PyQt6.QtCore import QThread, QObject, pyqtSignal, pyqtSlot as Slot, Qt, QRectF
 from PyQt6.QtCore import QPointF
+
+from rich import print
 
 
 class roi_style:
@@ -98,15 +101,21 @@ class ParallelMeasureLines(pg.GraphicsObject):
 class LiveRectangleROI(pg.ROI):
     def __init__(self, x_width, y_height):
         super().__init__(
-            [int(.25*self.x_width), int(.25*self.y_height)], #upper left corner
-            [int(.5*self.x_width), int(.5*self.y_height)], #size
+            [int(.25*x_width), int(.25*y_height)], #upper left corner
+            [int(.5*x_width), int(.5*y_height)], #size
             pen = roi_style.BORDER, 
-            handlePen=roi_style.BORDER,
+            hoverPen = roi_style.BORDER, 
+            handlePen=roi_style.HANDLE,
+            handleHoverPen=roi_style.HANDLE_HOVER,
             scaleSnap = True, 
-            translateSnap = True
+            translateSnap = True,
+            maxBounds = QtCore.QRectF(0, 0, x_width, y_height)
         )
         self.addScaleHandle([1, 1], [0, 0])
         self.addScaleHandle([0, 0], [1, 1])
+
+    def getbounds(self, x_width, y_height):
+        return QtCore.QRectF(0, 0, x_width, y_height)
 
 class PatternPolyLineROI(pg.PolyLineROI):
     def __init__(self, x_width, y_height):
@@ -120,16 +129,35 @@ class PatternPolyLineROI(pg.PolyLineROI):
                 [ul[0], ul[1]+size[1]] #lower left
             ],
             pen = roi_style.BORDER, 
+            hoverPen = roi_style.BORDER, 
             handlePen=roi_style.HANDLE, 
             handleHoverPen=roi_style.HANDLE_HOVER, 
             scaleSnap = True, 
             translateSnap = True, 
             closed=True
         )
-    def rasterize(self, x_width, y_height) -> np.ndarray:
+    
+    def getbounds(self, x_width, y_height):
+        ## TODO: why is the coordinate system like this?
+        return QtCore.QRectF(-.25*x_width, -.25*y_height, .5*x_width, .5*y_height)
+
+    def checkPointMove(self, handle, pos, modifiers):
+        # print(f"{handle.pos().x()}, {handle.pos().y()}")
+        if not self.asPolygon().is_simple:
+            handle.sigRemoveRequested.emit(handle)
+        # something with this doesn't work quite right
+        # remove the handle if the move is out of line
+        # otherwise, the handle gets "stuck"
+        return True
+    
+    def asPolygon(self):
         handles = self.getHandles()
         points = []
         for handle in handles:
             pos = handle.pos()
             points.append((pos.x(), pos.y()))
-        return rasterize([Polygon(points)], [255], (x_width, y_height), dtype='uint8')
+        return Polygon(points)
+
+    def rasterize(self, x_width, y_height) -> np.ndarray:
+        return rasterize([self.asPolygon()], [255], (x_width, y_height), dtype='uint8')
+    

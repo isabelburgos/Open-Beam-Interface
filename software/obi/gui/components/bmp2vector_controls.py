@@ -24,7 +24,7 @@ class PatternWorker(QObject):
         max_dwell = kwargs["dwell_time"]
         invert = kwargs["invert"]
 
-        bmp2vector = BitmapVectorPattern(path)
+        bmp2vector = BitmapVectorPattern.from_path(path)
         progress_fn=lambda p:self.progress.emit(p)
         bmp2vector.rescale(resolution, max_dwell, invert)
         bmp2vector.vector_convert(progress_fn)
