@@ -5,7 +5,6 @@ from geo_rasterize import rasterize
 
 import pyqtgraph as pg
 from pyqtgraph.Qt import QtCore
-from pyqtgraph.graphicsItems.TextItem import TextItem
 
 from PyQt6.QtWidgets import (QHBoxLayout, QMainWindow,
                              QMessageBox, QPushButton,
@@ -13,8 +12,6 @@ from PyQt6.QtWidgets import (QHBoxLayout, QMainWindow,
                              QSpinBox, QSizePolicy)
 from PyQt6.QtCore import QThread, QObject, pyqtSignal, pyqtSlot as Slot, Qt, QRectF
 from PyQt6.QtCore import QPointF
-
-from rich import print
 
 
 class roi_style:

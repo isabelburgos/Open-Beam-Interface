@@ -99,7 +99,6 @@ class PatternControlButtons(QVBoxLayout):
     def setEnabled(self, enabled=True):
         self.write_btn.setEnabled(enabled)
 
-
 class CombinedPatternControls(QWidget):
     process_requested = pyqtSignal(dict)
     def __init__(self, conn): #Connection
