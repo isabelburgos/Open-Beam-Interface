@@ -7,6 +7,7 @@ from pyqtgraph.exporters import Exporter
 from pyqtgraph.Qt import QtCore
 from pyqtgraph.graphicsItems.TextItem import TextItem
 
+import PyQt6
 from PyQt6.QtWidgets import (QHBoxLayout, QMainWindow,
                              QMessageBox, QPushButton,
                              QVBoxLayout, QWidget, QLabel, QGridLayout,
@@ -16,6 +17,7 @@ from PyQt6.QtCore import QThread, QObject, pyqtSignal, pyqtSlot as Slot, Qt, QRe
 logger = logging.getLogger()
 
 from PyQt6.QtCore import QPointF
+from PyQt6 import QtGui
 
 from rich import print
 
@@ -25,6 +27,7 @@ from .roi import LiveRectangleROI, PatternPolyLineROI, MeasureLine, ParallelMeas
 class ImageDisplay(pg.GraphicsLayoutWidget):
     _logger = logger.getChild("ImageDisplay")
     sigResolutionChanged = pyqtSignal(tuple)
+    sigROIAdded = pyqtSignal(pg.ROI)
     def __init__(self, y_height, x_width, invertY=True, invertX=False):
         super().__init__()
         self.y_height = y_height
@@ -37,6 +40,11 @@ class ImageDisplay(pg.GraphicsLayoutWidget):
         self.live_img = pg.ImageItem(border='w',axisOrder="row-major")
         self.live_img.setImage(np.full((y_height, x_width), 0, np.uint8), rect = (0,0,x_width, y_height), autoLevels=False, autoHistogramRange=True)
         self.image_view.addItem(self.live_img)
+
+        self.overlay = pg.ImageItem(border='w',axisOrder="row-major")
+        self.overlay.setOpacity(0.3)
+        self.overlay.setCompositionMode(QtGui.QPainter.CompositionMode.CompositionMode_SourceOver)
+        self.image_view.addItem(self.overlay)
         
         self.data = np.zeros(shape = (y_height, x_width))
 
@@ -97,7 +105,12 @@ class ImageDisplay(pg.GraphicsLayoutWidget):
         self.image_view.addItem(roi)
         roi.maxBounds = roi.getbounds(self.x_width, self.y_height)
         roi.setZValue(10)  # make sure ROI is drawn above image
-        roi.introduce()
+        self.sigROIAdded.emit(roi)
+    
+    @Slot(PyQt6.sip.wrappertype)
+    def addROI(self, roi_class):
+        roi = roi_class(self.x_width, self.y_height)
+        self.setup_roi(roi)
 
     def add_ROI(self):
         # Custom ROI for selecting an image region
@@ -163,6 +176,9 @@ class ImageDisplay(pg.GraphicsLayoutWidget):
         x_count, y_count = self.roi.size()
         return int(x_start), int(x_count), int(y_start), int(y_count)
         
+    def setOverlay(self, roi:pg.ROI):
+        image = roi.rasterize(self.x_width, self.y_height)
+        self.overlay.setImage(image)
 
     def setImage(self, image: np.array(np.uint8)):
         ## image must be 2D np.array of np.uint8

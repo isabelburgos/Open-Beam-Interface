@@ -114,6 +114,7 @@ class LiveRectangleROI(pg.ROI):
     def getbounds(self, x_width, y_height):
         return QtCore.QRectF(0, 0, x_width, y_height)
 
+
 class PatternPolyLineROI(pg.PolyLineROI):
     def __init__(self, x_width, y_height):
         ul = [int(.25*x_width), int(.25*y_height)]
@@ -147,13 +148,16 @@ class PatternPolyLineROI(pg.PolyLineROI):
         # otherwise, the handle gets "stuck"
         return True
     
-    def asPolygon(self):
+    def asPoints(self):
         handles = self.getHandles()
         points = []
         for handle in handles:
             pos = handle.pos()
             points.append((pos.x(), pos.y()))
-        return Polygon(points)
+        return points
+    
+    def asPolygon(self):
+        return Polygon(self.asPoints())
 
     def rasterize(self, x_width, y_height) -> np.ndarray:
         return rasterize([self.asPolygon()], [255], (x_width, y_height), dtype='uint8')
