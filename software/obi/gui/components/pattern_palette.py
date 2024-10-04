@@ -30,6 +30,7 @@ class ROITypeButton(QPushButton):
         self.sigROIRequested.emit(self.roi_class)
 
 class ShapeDataNode(QTreeWidgetItem):
+    sigRequestSetWidget = pyqtSignal(QTreeWidgetItem, int, QWidget)
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.display()
@@ -41,10 +42,12 @@ class ShapeDataNode(QTreeWidgetItem):
         print("unclick")
 
 class XCoordNode(ShapeDataNode):
+    highlight_pen = pg.mkPen(color = "#ffffff", width = 8) 
     def __init__(self, handle, *args, **kwargs):
         self.handle = handle
         super().__init__(*args, **kwargs)
         self.setText(0, "x")
+        handle.xChanged.connect(self.display)
     def display(self):
         self.setText(1, f"{self.handle.x()}")
     def doubleClickResponse(self, column):
@@ -52,16 +55,42 @@ class XCoordNode(ShapeDataNode):
             edit = QSpinBox()
             edit.setRange(0,511)
             edit.setSingleStep(1)
-            edit.valueChanged.connect(itm.handle.setY)
-            self.setItemWidget(itm,column,edit)
+            def moveHandle(x):
+                print(dir(self.handle))
+                print(f"{self.handle.pos()=}")
+                print(f"{self.handle.scenePos()=}")
+                print(f"{self.handle.viewPos()=}")
+                # self.handle.movePoint((self.handle.scenePos().y(), x), finish=True)
+                self.handle.setX(x)
+            edit.valueChanged.connect(moveHandle)
+            return edit
+    def set_handle_pen(self, pen):
+        self.handle.pen = pen
+        self.handle.currentPen = self.handle.pen
+        self.handle.update()
+    def selected(self):
+        self.set_handle_pen(self.highlight_pen)
+    def unselected(self):
+        self.set_handle_pen(roi_styles.HANDLE)
+
+
 
 class PolygonPointNode(ShapeDataNode):
-    def __init__(self, handle, *args, **kwargs):
+    highlight_pen = pg.mkPen(color = "#ffffff", width = 8) 
+    def __init__(self, handle, num: int, *args, **kwargs):
         self.handle = handle
         super().__init__(*args, **kwargs)
-        self.setText(0, "Point")
+        self.setText(0, f"Point {num}")
     def display(self):
         xnode = XCoordNode(self.handle, self)
+    def set_handle_pen(self, pen):
+        self.handle.pen = pen
+        self.handle.currentPen = self.handle.pen
+        self.handle.update()
+    def selected(self):
+        self.set_handle_pen(self.highlight_pen)
+    def unselected(self):
+        self.set_handle_pen(roi_styles.HANDLE)
 
 class PolygonShapeNode(ShapeDataNode):
     def __init__(self, roi: PatternPolyLineROI, *args, **kwargs):
@@ -69,9 +98,11 @@ class PolygonShapeNode(ShapeDataNode):
         super().__init__(*args, **kwargs)
         self.setText(0, "Polygon")
     def display(self):
+        # self.takeChildren()
+        #existing_handles = [self.child(i).handle for i in range(self.childCount())]
         for i, handle in enumerate(self.roi.getHandles()):
-            handlenode = PolygonPointNode(handle, self)
-
+            #if not handle in existing_handles:
+            handlenode = PolygonPointNode(handle, i+1, self)
 
 class ShapeDataTree(QTreeWidget):
     def __init__(self, *args, **kwargs):
@@ -87,16 +118,16 @@ class ShapeDataTree(QTreeWidget):
             current.selected()
     def clickedItem(self, itm, column):
         print(f"clicked {itm=}, {column=}")
-        itm.doubleClickResponse(column)
+        widget = itm.doubleClickResponse(column)
+        if isinstance(widget, QWidget): #response could be None
+            self.setItemWidget(itm,column,widget)
 
 
 class PatternTypes(QVBoxLayout):
     sigROIRequested = pyqtSignal(PyQt6.sip.wrappertype) #Ask to place a new ROI on ImageDisplay
-    sigRasterizeRequested = pyqtSignal(pg.ROI)
+    sigRasterizeRequested = pyqtSignal(object)
     def __init__(self):
         super().__init__()
-        # self.trees = QVBoxLayout()
-        # self.trees.addWidget(QLabel("Patterns"))
         self.tree = ShapeDataTree()
 
         btns = QHBoxLayout()
@@ -115,18 +146,10 @@ class PatternTypes(QVBoxLayout):
     @Slot(pg.ROI)
     def receive_ROI(self, roi: pg.ROI):
         node = PolygonShapeNode(roi, self.tree)
-        p =  QStyledItemDelegate()
-        node.setItemDelegate(p)
-        
-        # w = QWidget()
-        # w.setLayout(panel)
-        # pp = QTreeWidgetItem(poly)
-        # pp.setExpanded(True)
-        # self.trees.setHeaderItem(poly)
-        # self.trees.setItemWidget(pp, 0, w)
-        # # self.addLayout(panel)
-        # panel.sigRasterizeRequested.connect(self.sigRasterizeRequested)
+        print(dir(node))
         self.sigRasterizeRequested.emit(roi)
+        roi.sigRegionChanged.connect(self.sigRasterizeRequested)
+        roi.sigRegionChanged.connect(node.display)
 
     def connect(self, display): #ImageDisplay
         self.sigROIRequested.connect(display.addROI)

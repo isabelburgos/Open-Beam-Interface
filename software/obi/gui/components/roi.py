@@ -134,7 +134,7 @@ class PatternPolyLineROI(pg.PolyLineROI):
             translateSnap = True, 
             closed=True
         )
-    
+
     def getbounds(self, x_width, y_height):
         ## TODO: why is the coordinate system like this?
         return QtCore.QRectF(-.25*x_width, -.25*y_height, .5*x_width, .5*y_height)
@@ -149,11 +149,12 @@ class PatternPolyLineROI(pg.PolyLineROI):
         return True
     
     def asPoints(self):
+        ox, oy = self.pos().x(), self.pos().y()
         handles = self.getHandles()
         points = []
         for handle in handles:
             pos = handle.pos()
-            points.append((pos.x(), pos.y()))
+            points.append((pos.x()+ox, pos.y()+oy))
         return points
     
     def asPolygon(self):

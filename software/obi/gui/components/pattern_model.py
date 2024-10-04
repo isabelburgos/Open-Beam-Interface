@@ -21,6 +21,13 @@ from rich import print
 class m(QAbstractItemModel):
     def __init__(self):
         super().__init__()
+    def data(self, index, role):
+        return "text"
+    def columnCount(self, index):
+        return 1
+    def rowCount(self, index):
+        return 1
+
 
 if __name__ == "__main__":
     from .image_display import ImageDisplay
@@ -29,7 +36,4 @@ if __name__ == "__main__":
     tree = QTreeView()
     tree.setModel(mm)
     tree.show()
-    t = QTreeWidget(tree)
-    g = QTreeWidgetItem(t)
-    g.setText(0, "Text")
     pg.exec()

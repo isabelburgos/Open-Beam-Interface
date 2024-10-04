@@ -57,6 +57,7 @@ class ImageDisplay(pg.GraphicsLayoutWidget):
         self.hist.setLevels(min=0,max=255)
 
         self.roi = None
+        self.rois = []
         self.line = None
         self.measure_lines = ParallelMeasureLines(512, 512)
 
@@ -102,6 +103,7 @@ class ImageDisplay(pg.GraphicsLayoutWidget):
         return policy
     
     def setup_roi(self, roi:pg.ROI):
+        self.rois.append(roi)
         self.image_view.addItem(roi)
         roi.maxBounds = roi.getbounds(self.x_width, self.y_height)
         roi.setZValue(10)  # make sure ROI is drawn above image
@@ -126,8 +128,8 @@ class ImageDisplay(pg.GraphicsLayoutWidget):
         self.img.setParentItem(self.roi)
     
     def add_polyline_ROI(self):
-        self.roi = PatternPolyLineROI(self.x_width, self.y_height)
-        self.setup_roi(self.roi)
+        roi = PatternPolyLineROI(self.x_width, self.y_height)
+        self.setup_roi(roi)
 
     def add_line(self, start=None, end=None):
         if start == None:
