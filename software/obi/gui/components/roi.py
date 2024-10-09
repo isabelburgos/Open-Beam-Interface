@@ -10,12 +10,13 @@ from PyQt6.QtWidgets import (QHBoxLayout, QMainWindow,
                              QMessageBox, QPushButton,
                              QVBoxLayout, QWidget, QLabel, QGridLayout,
                              QSpinBox, QSizePolicy)
-from PyQt6.QtCore import QThread, QObject, pyqtSignal, pyqtSlot as Slot, Qt, QRectF
+from PyQt6.QtCore import QThread, QObject, pyqtSignal, pyqtSlot as Slot, Qt, QRectF, QSizeF
 from PyQt6.QtCore import QPointF
 
 
 class roi_style:
     BORDER = pg.mkPen(color = "#00ff00", width = 2)
+    BORDER_HOVER = pg.mkPen(color = "#00ff00", width = 4)
     HANDLE = pg.mkPen(color = "#00ff00", width = 5)
     HANDLE_HOVER = pg.mkPen(color = "#00ff00", width = 8) 
 
@@ -101,7 +102,7 @@ class LiveRectangleROI(pg.ROI):
             [int(.25*x_width), int(.25*y_height)], #upper left corner
             [int(.5*x_width), int(.5*y_height)], #size
             pen = roi_style.BORDER, 
-            hoverPen = roi_style.BORDER, 
+            hoverPen = roi_style.BORDER_HOVER, 
             handlePen=roi_style.HANDLE,
             handleHoverPen=roi_style.HANDLE_HOVER,
             scaleSnap = True, 
@@ -116,6 +117,7 @@ class LiveRectangleROI(pg.ROI):
 
 
 class PatternPolyLineROI(pg.PolyLineROI):
+    sigRasterizeRequested = pyqtSignal(object) #see self.requestRasterize()
     def __init__(self, x_width, y_height):
         ul = [int(.25*x_width), int(.25*y_height)]
         size = [int(.5*x_width), int(.5*y_height)]
@@ -127,29 +129,51 @@ class PatternPolyLineROI(pg.PolyLineROI):
                 [ul[0], ul[1]+size[1]] #lower left
             ],
             pen = roi_style.BORDER, 
-            hoverPen = roi_style.BORDER, 
+            hoverPen = roi_style.BORDER_HOVER, 
             handlePen=roi_style.HANDLE, 
             handleHoverPen=roi_style.HANDLE_HOVER, 
             scaleSnap = True, 
             translateSnap = True, 
-            closed=True
+            closed=True,
+            removable=True
         )
 
     def getbounds(self, x_width, y_height):
         ## TODO: why is the coordinate system like this?
         return QtCore.QRectF(-.25*x_width, -.25*y_height, .5*x_width, .5*y_height)
 
+    def stateRect(self, state):
+        minX, minY, maxX, maxY = Polygon(self.asPoints(state['pos'])).bounds
+        # # remember, y axis is inverted and starts at the top, x axis starts at the left
+        topLeft = QPointF(minX, minY)
+        bottomRight = QPointF(maxX, maxY)
+        ## TODO: again, why are u like this?
+        ul = topLeft + self.maxBounds.topLeft()
+        lr = topLeft - bottomRight
+        lrs = QSizeF(-lr.x(), -lr.y()) - self.maxBounds.size()
+        r = QRectF(ul,lrs)
+        return r
+
     def checkPointMove(self, handle, pos, modifiers):
         # print(f"{handle.pos().x()}, {handle.pos().y()}")
-        if not self.asPolygon().is_simple:
+        # newState = self.state
+        # newState['pos'] = pos
+        # if self.maxBounds is not None:
+        #     r = self.stateRect(newState)
+        #     if not self.maxBounds.contains(r):
+        #         return False
+        if not Polygon(self.asPoints()).is_simple:
             handle.sigRemoveRequested.emit(handle)
         # something with this doesn't work quite right
         # remove the handle if the move is out of line
         # otherwise, the handle gets "stuck"
         return True
     
-    def asPoints(self):
-        ox, oy = self.pos().x(), self.pos().y()
+    def asPoints(self, pos=None): ## halfway deprecated...
+        if pos == None:
+            pos = self.pos()
+        ox, oy = pos.x(), pos.y()
+        # ox, oy = 0,0
         handles = self.getHandles()
         points = []
         for handle in handles:
@@ -157,9 +181,16 @@ class PatternPolyLineROI(pg.PolyLineROI):
             points.append((pos.x()+ox, pos.y()+oy))
         return points
     
-    def asPolygon(self):
-        return Polygon(self.asPoints())
+    def absolutePoints(self, display): #ImageDisplay
+        positions = [display.mapToREALITY(handle) for handle in self.getHandles()] # [QPoint]
+        coords = [(pos.x(), pos.y()) for pos in positions] # [(x: int, y:int)]
+        return coords
 
-    def rasterize(self, x_width, y_height) -> np.ndarray:
-        return rasterize([self.asPolygon()], [255], (x_width, y_height), dtype='uint8')
+    @staticmethod
+    def rasterize(polygon:Polygon, x_width, y_height) -> np.ndarray:
+        return rasterize([polygon], [255], (x_width, y_height), dtype='uint8')
+    
+    def requestRasterize(self):
+        #workaround to let QTreeWidgetItem trigger this signal when a shape node is clicked
+        self.sigRasterizeRequested.emit(self)
     
