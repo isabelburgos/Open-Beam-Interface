@@ -1,6 +1,7 @@
 import datetime
 import logging
 import math
+
 import numpy as np
 import pyqtgraph as pg
 from pyqtgraph.exporters import Exporter
@@ -109,6 +110,9 @@ class ImageDisplay(pg.GraphicsLayoutWidget):
         roi.setZValue(10)  # make sure ROI is drawn above image
         self.sigROIAdded.emit(roi)
     
+    def mapToREALITY(self, obj): #absolute position in frame coordinates, which correspond to real scan pixels
+        return self.live_img.mapFromScene(obj.scenePos())
+    
     @Slot(PyQt6.sip.wrappertype)
     def addROI(self, roi_class):
         roi = roi_class(self.x_width, self.y_height)
@@ -179,7 +183,7 @@ class ImageDisplay(pg.GraphicsLayoutWidget):
         return int(x_start), int(x_count), int(y_start), int(y_count)
         
     def setOverlay(self, roi:pg.ROI):
-        image = roi.rasterize(self.x_width, self.y_height)
+        image = roi.rasterize(self)
         self.overlay.setImage(image)
 
     def setImage(self, image: np.array(np.uint8)):
@@ -209,7 +213,6 @@ class ImageDisplay(pg.GraphicsLayoutWidget):
         self.setImage(array)
 
 if __name__ == "__main__":
-    from geo_rasterize import rasterize
     app = pg.mkQApp()
     image_display = ImageDisplay(512, 512)
     image_display.showTest()
@@ -218,11 +221,5 @@ if __name__ == "__main__":
     #image_display.add_double_lines()
     #image_display.add_image_ROI()
     image_display.add_polyline_ROI()
-    # def fn():
-    #     buf = image_display.roi.asPolygon().buffer(0)
-    #     #print(buf.is_ring)
-    #     f =  rasterize([buf], [255], (image_display.x_width, image_display.y_height), dtype='uint8')
-    #     image_display.setImage(f)
-    # image_display.roi.sigRegionChanged.connect(fn)
     image_display.show()
     pg.exec()

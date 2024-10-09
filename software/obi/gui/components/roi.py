@@ -186,9 +186,9 @@ class PatternPolyLineROI(pg.PolyLineROI):
         coords = [(pos.x(), pos.y()) for pos in positions] # [(x: int, y:int)]
         return coords
 
-    @staticmethod
-    def rasterize(polygon:Polygon, x_width, y_height) -> np.ndarray:
-        return rasterize([polygon], [255], (x_width, y_height), dtype='uint8')
+    def rasterize(self, display) -> np.ndarray:
+        polygon = Polygon(self.absolutePoints(display))
+        return rasterize([polygon], [255], (display.x_width, display.y_height), dtype='uint8')
     
     def requestRasterize(self):
         #workaround to let QTreeWidgetItem trigger this signal when a shape node is clicked

@@ -8,7 +8,7 @@ from pyqtgraph.Qt import QtCore
 
 from PyQt6.QtWidgets import (QHBoxLayout, QMainWindow, QLineEdit, QStyledItemDelegate,
                              QMessageBox, QPushButton, QTreeWidget, QTreeWidgetItem,
-                             QVBoxLayout, QWidget, QLabel, QGridLayout,
+                             QVBoxLayout, QWidget, QLabel, QGridLayout, QMenu,
                              QSpinBox, QSizePolicy)
 from PyQt6.QtCore import QThread, QObject, pyqtSignal, pyqtSlot as Slot, Qt, QRectF
 from PyQt6.QtCore import QPointF
@@ -45,11 +45,16 @@ class XCoordNode(ShapeDataNode):
     highlight_pen = pg.mkPen(color = "#ffffff", width = 8) 
     def __init__(self, handle, *args, **kwargs):
         self.handle = handle
+        handle.sigClicked.connect(self.mouse)
         super().__init__(*args, **kwargs)
         self.setText(0, "x")
         handle.xChanged.connect(self.display)
     def display(self):
         self.setText(1, f"{self.handle.x()}")
+    def mouse(self, ev):
+        print("Hello")
+        print(ev)
+        print(f"{ev.scenePos()=}")
     def doubleClickResponse(self, column):
         if column == 1: #data column
             edit = QSpinBox()
@@ -70,17 +75,18 @@ class XCoordNode(ShapeDataNode):
         self.handle.update()
     def selected(self):
         self.set_handle_pen(self.highlight_pen)
+        self.parent().selected()
     def unselected(self):
-        self.set_handle_pen(roi_styles.HANDLE)
-
-
+        self.set_handle_pen(roi_style.HANDLE)
 
 class PolygonPointNode(ShapeDataNode):
     highlight_pen = pg.mkPen(color = "#ffffff", width = 8) 
     def __init__(self, handle, num: int, *args, **kwargs):
         self.handle = handle
+        handle.sigRemoveRequested.connect(self.remove)
         super().__init__(*args, **kwargs)
         self.setText(0, f"Point {num}")
+        self.handle.setToolTip(f"Point {num}")
     def display(self):
         xnode = XCoordNode(self.handle, self)
     def set_handle_pen(self, pen):
@@ -89,20 +95,43 @@ class PolygonPointNode(ShapeDataNode):
         self.handle.update()
     def selected(self):
         self.set_handle_pen(self.highlight_pen)
+        self.parent().selected()
     def unselected(self):
-        self.set_handle_pen(roi_styles.HANDLE)
+        self.set_handle_pen(roi_style.HANDLE)
+    def remove(self):
+        p = self.parent()
+        p.removeChild(self)
+        p.renumerate()
 
-class PolygonShapeNode(ShapeDataNode):
-    def __init__(self, roi: PatternPolyLineROI, *args, **kwargs):
+class ROIShapeNode(ShapeDataNode):
+    strname = "Shape"
+    def __init__(self, roi: pg.ROI, num: int, *args, **kwargs):
         self.roi = roi
         super().__init__(*args, **kwargs)
-        self.setText(0, "Polygon")
+        self.setText(0, f"{self.strname} {num}")
+        self.roi.setToolTip(f"{self.strname} {num}")
+    def selected(self):
+        self.roi.setMouseHover(True)
+        self.roi.requestRasterize()
+    def unselected(self):
+        self.roi.setMouseHover(False)
+        
+class PolygonShapeNode(ROIShapeNode):
+    strname = "Polygon"
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
     def display(self):
         # self.takeChildren()
-        #existing_handles = [self.child(i).handle for i in range(self.childCount())]
+        existing_handles = [self.child(i).handle for i in range(self.childCount())]
         for i, handle in enumerate(self.roi.getHandles()):
-            #if not handle in existing_handles:
-            handlenode = PolygonPointNode(handle, i+1, self)
+            if not handle in existing_handles:
+                handlenode = PolygonPointNode(handle, i+1)
+                self.insertChild(i, handlenode)
+        self.renumerate()
+    def renumerate(self):
+        for i in range(self.childCount()):
+            self.child(i).setText(0, f"Point {i+1}")
+
 
 class ShapeDataTree(QTreeWidget):
     def __init__(self, *args, **kwargs):
@@ -110,6 +139,8 @@ class ShapeDataTree(QTreeWidget):
         self.setColumnCount(2)
         self.itemDoubleClicked.connect(self.clickedItem)
         self.currentItemChanged.connect(self.changedItem)
+        self.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+        self.customContextMenuRequested.connect(self.openMenu)
     def changedItem(self, current, previous):
         print(f"changed, {current=}, {previous=}")
         if previous is not None:
@@ -121,6 +152,27 @@ class ShapeDataTree(QTreeWidget):
         widget = itm.doubleClickResponse(column)
         if isinstance(widget, QWidget): #response could be None
             self.setItemWidget(itm,column,widget)
+    def openMenu(self, position):
+        menu = QMenu()
+
+        indexes = self.selectedIndexes()
+        children = []
+        for index in indexes:
+            child = self.itemFromIndex(index)
+            children.append(child)
+        print(children)
+        node = children[0]
+        remove = menu.addAction("Remove")
+        if isinstance(node, ROIShapeNode):
+            remove.triggered.connect(node.roi._emitRemoveRequest)
+        if isinstance(node, PolygonPointNode):
+            removeAllowed = all(r.checkRemoveHandle(self) for r in node.handle.rois)
+            if removeAllowed:
+                remove.triggered.connect(node.handle.removeClicked)
+            else:
+                remove.setEnabled(False)
+        
+        menu.exec(self.viewport().mapToGlobal(position))
 
 
 class PatternTypes(QVBoxLayout):
@@ -139,16 +191,19 @@ class PatternTypes(QVBoxLayout):
         add(ROITypeButton("Rectangle", LiveRectangleROI))
         add(ROITypeButton("Polygon", PatternPolyLineROI))
         self.addWidget(self.tree)
+
+        self.polygons = []
     
     def emit_ROI(self, roi_class:PyQt6.sip.wrappertype):
         self.sigROIRequested.emit(roi_class)
     
     @Slot(pg.ROI)
     def receive_ROI(self, roi: pg.ROI):
-        node = PolygonShapeNode(roi, self.tree)
-        print(dir(node))
+        node = PolygonShapeNode(roi, len(self.polygons) + 1, self.tree)
+        self.polygons.append(roi)
         self.sigRasterizeRequested.emit(roi)
         roi.sigRegionChanged.connect(self.sigRasterizeRequested)
+        roi.sigRasterizeRequested.connect(self.sigRasterizeRequested)
         roi.sigRegionChanged.connect(node.display)
 
     def connect(self, display): #ImageDisplay
