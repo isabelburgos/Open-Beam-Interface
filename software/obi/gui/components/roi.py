@@ -140,23 +140,21 @@ class PatternPolyLineROI(pg.PolyLineROI):
 
     def getbounds(self, x_width, y_height):
         ## TODO: why is the coordinate system like this?
-        return QtCore.QRectF(-.25*x_width, -.25*y_height, .5*x_width, .5*y_height)
+        return QtCore.QRectF(0, 0, x_width, y_height)
 
     def stateRect(self, state):
         minX, minY, maxX, maxY = Polygon(self.asPoints(state['pos'])).bounds
-        # # remember, y axis is inverted and starts at the top, x axis starts at the left
+        ## remember, y axis is inverted and starts at the top, x axis starts at the left
         topLeft = QPointF(minX, minY)
         bottomRight = QPointF(maxX, maxY)
-        ## TODO: again, why are u like this?
-        ul = topLeft + self.maxBounds.topLeft()
-        lr = topLeft - bottomRight
-        lrs = QSizeF(-lr.x(), -lr.y()) - self.maxBounds.size()
-        r = QRectF(ul,lrs)
-        return r
+        return QRectF(topLeft, bottomRight)
 
     def checkPointMove(self, handle, pos, modifiers):
         if not Polygon(self.asPoints()).is_simple:
             handle.sigRemoveRequested.emit(handle)
+        if self.maxBounds is not None:
+            if not self.maxBounds.contains(self.mapFromScene(pos)):
+                return False
         # something with this doesn't work quite right
         # remove the handle if the move is out of line
         # otherwise, the handle gets "stuck"
