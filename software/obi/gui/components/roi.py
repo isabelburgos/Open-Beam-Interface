@@ -155,13 +155,6 @@ class PatternPolyLineROI(pg.PolyLineROI):
         return r
 
     def checkPointMove(self, handle, pos, modifiers):
-        # print(f"{handle.pos().x()}, {handle.pos().y()}")
-        # newState = self.state
-        # newState['pos'] = pos
-        # if self.maxBounds is not None:
-        #     r = self.stateRect(newState)
-        #     if not self.maxBounds.contains(r):
-        #         return False
         if not Polygon(self.asPoints()).is_simple:
             handle.sigRemoveRequested.emit(handle)
         # something with this doesn't work quite right
