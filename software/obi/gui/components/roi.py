@@ -97,6 +97,7 @@ class ParallelMeasureLines(pg.GraphicsObject):
         self.sigRegionChanged.emit(d)
 
 class LiveRectangleROI(pg.ROI):
+    sigRasterizeRequested = pyqtSignal(object) #see self.requestRasterize()
     def __init__(self, x_width, y_height):
         super().__init__(
             [int(.25*x_width), int(.25*y_height)], #upper left corner
@@ -114,6 +115,23 @@ class LiveRectangleROI(pg.ROI):
 
     def getbounds(self, x_width, y_height):
         return QtCore.QRectF(0, 0, x_width, y_height)
+    
+    def requestRasterize(self):
+        #workaround to let QTreeWidgetItem trigger this signal when a shape node is clicked
+        self.sigRasterizeRequested.emit(self)
+
+    def absolutePoints(self, display): #ImageDisplay
+        pos = display.mapToREALITY(self)
+        size = self.size()
+        coords = [(pos.x(), pos.y()),
+                (pos.x() + size.x(), pos.y()),
+                (pos.x() + size.x(), pos.y() + size.y()),
+                (pos.x(), pos.y() + size.y())] # [(x: int, y:int)]
+        return coords
+
+    def rasterize(self, display) -> np.ndarray:
+        polygon = Polygon(self.absolutePoints(display))
+        return rasterize([polygon], [255], (display.x_width, display.y_height), dtype='uint8')
 
 
 class PatternPolyLineROI(pg.PolyLineROI):
@@ -150,14 +168,15 @@ class PatternPolyLineROI(pg.PolyLineROI):
         return QRectF(topLeft, bottomRight)
 
     def checkPointMove(self, handle, pos, modifiers):
-        if not Polygon(self.asPoints()).is_simple:
-            handle.sigRemoveRequested.emit(handle)
-        if self.maxBounds is not None:
-            if not self.maxBounds.contains(self.mapFromScene(pos)):
-                return False
         # something with this doesn't work quite right
         # remove the handle if the move is out of line
         # otherwise, the handle gets "stuck"
+        if not Polygon(self.asPoints()).is_simple:
+            handle.sigRemoveRequested.emit(handle)
+        # make sure the handle is within display boundary
+        if self.maxBounds is not None:
+            if not self.maxBounds.contains(self.mapFromScene(pos)):
+                return False
         return True
     
     def asPoints(self, pos=None): ## halfway deprecated...

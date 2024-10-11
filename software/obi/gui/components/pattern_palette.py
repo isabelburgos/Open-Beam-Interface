@@ -41,6 +41,7 @@ class ShapeDataNode(QTreeWidgetItem):
     def unselected(self):
         print("unclick")
 
+
 class XCoordNode(ShapeDataNode):
     highlight_pen = pg.mkPen(color = "#ffffff", width = 8) 
     def __init__(self, handle, *args, **kwargs):
@@ -61,12 +62,9 @@ class XCoordNode(ShapeDataNode):
             edit.setRange(0,511)
             edit.setSingleStep(1)
             def moveHandle(x):
-                print(dir(self.handle))
-                print(f"{self.handle.pos()=}")
-                print(f"{self.handle.scenePos()=}")
-                print(f"{self.handle.viewPos()=}")
-                # self.handle.movePoint((self.handle.scenePos().y(), x), finish=True)
-                self.handle.setX(x)
+                pt = QPointF(x, self.handle.y())
+                mappedPt = self.handle.mapToScene(self.handle.mapFromParent(pt))
+                self.handle.movePoint(pos=mappedPt, finish=True)
             edit.valueChanged.connect(moveHandle)
             return edit
     def set_handle_pen(self, pen):
@@ -133,6 +131,20 @@ class PolygonShapeNode(ROIShapeNode):
             self.child(i).setText(0, f"Point {i+1}")
 
 
+class RectShapeNode(ROIShapeNode):
+    strname = "Rectangle"
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+    def display(self):
+        size, pos = self.roi.getHandles()
+        posnode = QTreeWidgetItem(self)
+        posnode.setText(0, "Position")
+        posxnode = XCoordNode(pos, posnode)
+        sizenode = QTreeWidgetItem(self)
+        sizenode.setText(0, "Size")
+        sizexnode = XCoordNode(size, sizenode)
+
+
 class ShapeDataTree(QTreeWidget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -178,6 +190,10 @@ class ShapeDataTree(QTreeWidget):
 class PatternTypes(QVBoxLayout):
     sigROIRequested = pyqtSignal(PyQt6.sip.wrappertype) #Ask to place a new ROI on ImageDisplay
     sigRasterizeRequested = pyqtSignal(object)
+    node_mapping = {
+        PatternPolyLineROI: PolygonShapeNode,
+        LiveRectangleROI: RectShapeNode
+    }
     def __init__(self):
         super().__init__()
         self.tree = ShapeDataTree()
@@ -192,19 +208,29 @@ class PatternTypes(QVBoxLayout):
         add(ROITypeButton("Polygon", PatternPolyLineROI))
         self.addWidget(self.tree)
 
-        self.polygons = []
+        self.shapes = {
+            PatternPolyLineROI: [],
+            LiveRectangleROI: []
+        }
     
     def emit_ROI(self, roi_class:PyQt6.sip.wrappertype):
         self.sigROIRequested.emit(roi_class)
     
     @Slot(pg.ROI)
     def receive_ROI(self, roi: pg.ROI):
-        node = PolygonShapeNode(roi, len(self.polygons) + 1, self.tree)
-        self.polygons.append(roi)
+        node = self.create_node(roi)
         self.sigRasterizeRequested.emit(roi)
         roi.sigRegionChanged.connect(self.sigRasterizeRequested)
         roi.sigRasterizeRequested.connect(self.sigRasterizeRequested)
         roi.sigRegionChanged.connect(node.display)
+
+    def create_node(self, roi):
+        roitype = type(roi)
+        nodes = self.shapes.get(roitype)
+        nodetype = self.node_mapping.get(roitype)
+        node = nodetype(roi, len(nodes) + 1, self.tree)
+        self.shapes.update({roitype:nodes + [node]})
+        return node
 
     def connect(self, display): #ImageDisplay
         self.sigROIRequested.connect(display.addROI)
