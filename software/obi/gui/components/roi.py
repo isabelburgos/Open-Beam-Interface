@@ -19,6 +19,7 @@ class roi_style:
     BORDER_HOVER = pg.mkPen(color = "#00ff00", width = 4)
     HANDLE = pg.mkPen(color = "#00ff00", width = 5)
     HANDLE_HOVER = pg.mkPen(color = "#00ff00", width = 8) 
+    HANDLE_HIGHLIGHT = pg.mkPen(color = "#ffffff", width = 8) 
 
 class MeasureLine(pg.LineSegmentROI):
     def __init__(self, *args, **kwargs):
@@ -96,6 +97,16 @@ class ParallelMeasureLines(pg.GraphicsObject):
         self.lines.setRegion([p1, p_rot])
         self.sigRegionChanged.emit(d)
 
+from abc import ABCMeta, abstractmethod
+class OBIROIWrapper(pg.ROI):
+    ## RULES: this class CANNOT have ANY methods in common with the below subclasses
+    ## can we keep multiple inheritance sane??
+    sigRasterizeRequested = pyqtSignal(object) #see self.requestRasterize()
+    def requestRasterize(self):
+        #workaround to let QTreeWidgetItem trigger this signal when a shape node is clicked
+        self.sigRasterizeRequested.emit(self)
+
+
 class LiveRectangleROI(pg.ROI):
     sigRasterizeRequested = pyqtSignal(object) #see self.requestRasterize()
     def __init__(self, x_width, y_height):
@@ -113,9 +124,6 @@ class LiveRectangleROI(pg.ROI):
         self.addScaleHandle([1, 1], [0, 0])
         self.addScaleHandle([0, 0], [1, 1])
 
-    def getbounds(self, x_width, y_height):
-        return QtCore.QRectF(0, 0, x_width, y_height)
-    
     def requestRasterize(self):
         #workaround to let QTreeWidgetItem trigger this signal when a shape node is clicked
         self.sigRasterizeRequested.emit(self)
@@ -132,7 +140,11 @@ class LiveRectangleROI(pg.ROI):
     def rasterize(self, display) -> np.ndarray:
         polygon = Polygon(self.absolutePoints(display))
         return rasterize([polygon], [255], (display.x_width, display.y_height), dtype='uint8')
-
+    def setPos(self, *args, **kwargs):
+        super().setPos(*args, **kwargs)
+        for h in self.handles:
+            h['item'].xChanged.emit()
+            h['item'].yChanged.emit()
 
 class PatternPolyLineROI(pg.PolyLineROI):
     sigRasterizeRequested = pyqtSignal(object) #see self.requestRasterize()
@@ -156,10 +168,6 @@ class PatternPolyLineROI(pg.PolyLineROI):
             removable=True
         )
 
-    def getbounds(self, x_width, y_height):
-        ## TODO: why is the coordinate system like this?
-        return QtCore.QRectF(0, 0, x_width, y_height)
-
     def stateRect(self, state):
         minX, minY, maxX, maxY = Polygon(self.asPoints(state['pos'])).bounds
         ## remember, y axis is inverted and starts at the top, x axis starts at the left
@@ -175,7 +183,7 @@ class PatternPolyLineROI(pg.PolyLineROI):
             handle.sigRemoveRequested.emit(handle)
         # make sure the handle is within display boundary
         if self.maxBounds is not None:
-            if not self.maxBounds.contains(self.mapFromScene(pos)):
+            if not self.maxBounds.contains(self.mapToParent(self.mapFromScene(pos))):
                 return False
         return True
     
@@ -203,4 +211,9 @@ class PatternPolyLineROI(pg.PolyLineROI):
     def requestRasterize(self):
         #workaround to let QTreeWidgetItem trigger this signal when a shape node is clicked
         self.sigRasterizeRequested.emit(self)
+    def setPos(self, *args, **kwargs):
+        super().setPos(*args, **kwargs)
+        for h in self.handles:
+            h['item'].xChanged.emit()
+            h['item'].yChanged.emit()
     

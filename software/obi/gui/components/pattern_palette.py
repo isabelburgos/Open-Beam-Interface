@@ -41,6 +41,21 @@ class ShapeDataNode(QTreeWidgetItem):
     def unselected(self):
         print("unclick")
 
+class EditableShapeDataNode(ShapeDataNode):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+    def doubleClickResponse(self, column):
+        if column == 1: #data column
+            edit = QSpinBox()
+            edit.setRange(0,511)
+            edit.setSingleStep(1)
+            def moveHandle(x):
+                pt = QPointF(x, self.handle.y())
+                mappedPt = self.handle.mapToScene(self.handle.mapFromParent(pt))
+                self.handle.movePoint(pos=mappedPt, finish=True)
+            edit.valueChanged.connect(moveHandle)
+            return edit
+
 
 class XCoordNode(ShapeDataNode):
     highlight_pen = pg.mkPen(color = "#ffffff", width = 8) 

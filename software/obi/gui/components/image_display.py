@@ -106,7 +106,7 @@ class ImageDisplay(pg.GraphicsLayoutWidget):
     def setup_roi(self, roi:pg.ROI):
         self.rois.append(roi)
         self.image_view.addItem(roi)
-        roi.maxBounds = roi.getbounds(self.x_width, self.y_height)
+        roi.maxBounds = QtCore.QRectF(0, 0, self.x_width, self.y_height)
         roi.setZValue(10)  # make sure ROI is drawn above image
         self.sigROIAdded.emit(roi)
     

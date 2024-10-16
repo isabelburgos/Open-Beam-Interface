@@ -20,87 +20,88 @@ from .roi import PatternPolyLineROI, LiveRectangleROI, roi_style
 from rich import print
 
 
-def setHandleX(handle,display, x):
-    current = display.mapToREALITY(handle)
-    diff = QPointF(x-current.x(), 0)
-    mappedPt = handle.mapToScene(diff)
-    handle.movePoint(pos=mappedPt, finish=True)
+def buildNode(display, roi, tree):
+    def setHandlePos(handle, diff):
+        mappedPt = handle.mapToScene(diff)
+        handle.movePoint(pos=mappedPt, finish=True)
 
-def setPosHandleX(handle, display, rect, x):
-    current = display.mapToREALITY(handle)
-    rect.translate(x - current.x(),0)
-
-def getHandleXdata(handle, display):
-    return EditableShapeData(
-        name = "x",
-        obj = handle,
-        setter = lambda handle, x: setHandleX(handle, display, x),
-        getter = lambda handle: display.mapToREALITY(handle).x(),
-        sigChanged = handle.xChanged
-    )
-
-def getPosHandleXdata(handle, display, rect):
-    return EditableShapeData(
-        name = "x",
-        obj = handle,
-        setter = lambda handle, x: setPosHandleX(handle, display, rect, x),
-        getter = lambda handle: display.mapToREALITY(handle).x(),
-        sigChanged = handle.xChanged
-    )
-
-
-def buildRectNode(display, rect, tree):
-    sizeHandle, posHandle = rect.getHandles()[0], rect.getHandles()[1]
-
-    sizeHandleData = ShapeData(
-            name = "Size",
-            obj = sizeHandle,
-        ) 
+    def setHandleX(handle,display, x):
+        current = display.mapToREALITY(handle)
+        diff = QPointF(x-current.x(), 0)
+        setHandlePos(handle, diff)
+        
+    def setHandleY(handle,display, y):
+        current = display.mapToREALITY(handle)
+        diff = QPointF(0, y-current.y())
+        setHandlePos(handle, diff)
     
-    posHandleData = ShapeData(
-            name = "Pos",
-            obj = posHandle,
-        ) 
+    def setHandlePen(handle, pen):
+        handle.pen = pen
+        handle.currentPen = handle.pen
+        handle.update()
 
-    def getShapeData(rect):
-        return ShapeData(
-            name = "Rectangle",
-            obj = rect,
-        ) 
-    node = ShapeDataNode(getShapeData(rect), tree)
-    sizeNode = ShapeDataNode(sizeHandleData, node)
-    sizeXNode = EditableShapeDataNode(getHandleXdata(sizeHandle,display), sizeNode)
-    posNode = ShapeDataNode(posHandleData, node)
-    posXNode = EditableShapeDataNode(getHandleXdata(posHandle,display), posNode)
+    def getHandleData(handle, display, *, name, setter, getter, sigChanged):
+        return EditableShapeData(
+            name = name,
+            obj = handle,
+            select = lambda handle: setHandlePen(handle, roi_style.HANDLE_HIGHLIGHT),
+            deselect = lambda handle: setHandlePen(handle, roi_style.HANDLE),
+            setter = setter,
+            getter = getter,
+            sigChanged = sigChanged,
+        )
 
+    def getHandleXdata(handle, display):
+        return getHandleData(handle, display,
+            name = "x",
+            setter = lambda handle, x: setHandleX(handle, display, x),
+            getter = lambda handle: display.mapToREALITY(handle).x(),
+            sigChanged = handle.xChanged,
+        )
+    
+    def getHandleYdata(handle, display):
+        return getHandleData(handle, display,
+            name = "y",
+            setter = lambda handle, y: setHandleY(handle, display, y),
+            getter = lambda handle: display.mapToREALITY(handle).y(),
+            sigChanged = handle.yChanged,
+        )
 
-def buildPolyNode(display, polygon, tree):
+    name = "Shape"
+    if isinstance(roi, LiveRectangleROI):
+        name = "Rectangle"
+    if isinstance(roi, PatternPolyLineROI):
+        name = "Polygon"
+    
     shapeData = ShapeData(
-            name = "Polygon",
-            obj = polygon,
-        ) 
-    
+        name = name,
+        obj = roi, 
+        select=lambda roi:roi.requestRasterize(), 
+        deselect=lambda roi: print("nothing")) 
     node = ShapeDataNode(shapeData, tree)
 
-    for i, handle in enumerate(polygon.getHandles()):
+    for i, handle in enumerate(roi.getHandles()):
         handleData = ShapeData(
             name = f"Point {i+1}",
-            obj = handle
-        )
+            obj = handle,
+            select = lambda handle: setHandlePen(handle, roi_style.HANDLE_HIGHLIGHT),
+            deselect = lambda handle: setHandlePen(handle, roi_style.HANDLE)
+            )
         handleNode = ShapeDataNode(handleData, node)
         handleXNode = EditableShapeDataNode(getHandleXdata(handle, display), handleNode)
-
-def buildNode(display, roi, tree):
-    if isinstance(roi, LiveRectangleROI):
-        buildRectNode(display, roi, tree)
-    if isinstance(roi, PatternPolyLineROI):
-        buildPolyNode(display, roi, tree)
-
+        handleYNode = EditableShapeDataNode(getHandleYdata(handle, display), handleNode)
 
 @dataclass
 class ShapeData:
     name: str
     obj: object
+    select: object #function
+    deselect: object #function
+    def toggleSelected(self, selected:True):
+        if selected:
+            self.select(self.obj)
+        else:
+            self.deselect(self.obj)
 
 @dataclass
 class EditableShapeData(ShapeData):
@@ -113,7 +114,6 @@ class EditableShapeData(ShapeData):
         self.setter(self.obj, val)
 
 class ShapeDataNode(QTreeWidgetItem):
-    sigRequestSetWidget = pyqtSignal(QTreeWidgetItem, int, QWidget)
     def __init__(self, shapedata:ShapeData, *args, **kwargs):
         self.shapedata = shapedata
         super().__init__(*args, **kwargs)
@@ -123,9 +123,9 @@ class ShapeDataNode(QTreeWidgetItem):
     def doubleClickResponse(self, column):
         print("clickclick")
     def selected(self):
-        print("click")
+        self.shapedata.toggleSelected(True)
     def unselected(self):
-        print("unclick")
+        self.shapedata.toggleSelected(False)
 
 
 class EditableShapeDataNode(ShapeDataNode):
@@ -134,24 +134,31 @@ class EditableShapeDataNode(ShapeDataNode):
         self.shapedata.sigChanged.connect(self.display)
     def display(self):
         super().display()
-        self.setText(1, f"{self.shapedata.getval()}")
+        self.setText(1, f"{int(self.shapedata.getval())}")
+        if hasattr(self, "remove"):
+            if self.remove is not None:
+                self.remove(self, 1)
+                self.remove = None
     def doubleClickResponse(self, column):
         if column == 1: #data column
             edit = QSpinBox()
-            edit.setRange(0,511)
+            # edit.setRange(0,511)
             edit.setSingleStep(1)
-            def update():
-                edit.setValue(int(self.shapedata.getval()))
-            update()
+            edit.setValue(int(self.shapedata.getval()))
             edit.valueChanged.connect(self.shapedata.setval)
-            # self.shapedata.sigChanged.connect(update)
             return edit
+    def unselected(self):
+        self.display()
+        super().unselected()
+    def selected(self):
+        pass
 
 class ShapeDataTree(QTreeWidget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.setColumnCount(2)
-        self.itemDoubleClicked.connect(self.clickedItem)
+        # self.itemDoubleClicked.connect(self.clickedItem)
+        self.itemClicked.connect(self.clickedItem)
         self.currentItemChanged.connect(self.changedItem)
     def changedItem(self, current, previous):
         print(f"changed, {current=}, {previous=}")
@@ -163,7 +170,8 @@ class ShapeDataTree(QTreeWidget):
         print(f"clicked {itm=}, {column=}")
         widget = itm.doubleClickResponse(column)
         if isinstance(widget, QWidget): #response could be None
-            self.setItemWidget(itm,column,widget)
+            self.setItemWidget(itm, column, widget)
+            itm.remove = lambda itm, column: self.removeItemWidget(itm, column)
 
 
 if __name__ == "__main__":
@@ -175,7 +183,8 @@ if __name__ == "__main__":
     image_display = ImageDisplay(1024, 1024)
     def setup(roi):
         image_display.setup_roi(roi)
-        roi.maxBounds=None
+        roi.sigRasterizeRequested.connect(image_display.setOverlay)
+        roi.sigRegionChanged.connect(image_display.setOverlay)
         buildNode(image_display, roi, tree)
     setup(rect)
     setup(poly)
