@@ -67,29 +67,15 @@ def buildNode(display, roi, tree):
             sigChanged = handle.yChanged,
         )
 
-    name = "Shape"
-    if isinstance(roi, LiveRectangleROI):
-        name = "Rectangle"
-    if isinstance(roi, PatternPolyLineROI):
-        name = "Polygon"
-    
-    shapeData = ShapeData(
-        name = name,
-        obj = roi, 
-        select=lambda roi:roi.requestRasterize(), 
-        deselect=lambda roi: print("nothing")) 
-    node = ShapeDataNode(shapeData, tree)
+    node = ROIDataNode(roi, tree)
 
     for i, handle in enumerate(roi.getHandles()):
-        handleData = ShapeData(
-            name = f"Point {i+1}",
-            obj = handle,
-            select = lambda handle: setHandlePen(handle, roi_style.HANDLE_HIGHLIGHT),
-            deselect = lambda handle: setHandlePen(handle, roi_style.HANDLE)
-            )
-        handleNode = ShapeDataNode(handleData, node)
+        handleData = HandleData.from_handle(handle, name = f"Point {i+1}")
+        handleNode = HandleDataNode(handleData, node)
         handleXNode = EditableShapeDataNode(getHandleXdata(handle, display), handleNode)
         handleYNode = EditableShapeDataNode(getHandleYdata(handle, display), handleNode)
+
+
 
 @dataclass
 class ShapeData:
@@ -102,6 +88,18 @@ class ShapeData:
             self.select(self.obj)
         else:
             self.deselect(self.obj)
+    @classmethod
+    def from_roi(cls, roi):
+        name = "Shape"
+        if isinstance(roi, LiveRectangleROI):
+            name = "Rectangle"
+        if isinstance(roi, PatternPolyLineROI):
+            name = "Polygon"
+        return cls(
+            name = name,
+            obj = roi, 
+            select=lambda roi:roi.requestRasterize(), 
+            deselect=lambda roi: print("nothing")) 
 
 @dataclass
 class EditableShapeData(ShapeData):
@@ -127,7 +125,6 @@ class ShapeDataNode(QTreeWidgetItem):
     def unselected(self):
         self.shapedata.toggleSelected(False)
 
-
 class EditableShapeDataNode(ShapeDataNode):
     def __init__(self, shapedata:EditableShapeData, *args, **kwargs):
         super().__init__(shapedata, *args, **kwargs)
@@ -152,6 +149,79 @@ class EditableShapeDataNode(ShapeDataNode):
         super().unselected()
     def selected(self):
         pass
+
+class HandleDataNode(ShapeDataNode):
+    def __init__(self, handleData, node):
+        super().__init__(handleData, node)
+
+
+class HandleData(ShapeData):
+    @staticmethod
+    def setHandlePen(handle, pen):
+        handle.pen = pen
+        handle.currentPen = handle.pen
+        handle.update()
+
+    @classmethod
+    def from_handle(cls, handle, name):
+        return cls(
+            name = name,
+            obj = handle,
+            select = lambda handle: self.setHandlePen(handle, roi_style.HANDLE_HIGHLIGHT),
+            deselect = lambda handle: self.setHandlePen(handle, roi_style.HANDLE)
+            )
+
+class HandleCoordData(EditableShapeData):
+    @staticmethod
+    def setHandlePos(handle, diff):
+        mappedPt = handle.mapToScene(diff)
+        handle.movePoint(pos=mappedPt, finish=True)
+    @staticmethod
+    def setHandleX(handle,display, x):
+        current = display.mapToREALITY(handle)
+        diff = QPointF(x-current.x(), 0)
+        setHandlePos(handle, diff)
+    @staticmethod
+    def setHandleY(handle,display, y):
+        current = display.mapToREALITY(handle)
+        diff = QPointF(0, y-current.y())
+        setHandlePos(handle, diff)
+    
+    @staticmethod
+    def getHandleData(handle, display, *, name, setter, getter, sigChanged):
+        return EditableShapeData(
+            name = name,
+            obj = handle,
+            select = lambda handle: setHandlePen(handle, roi_style.HANDLE_HIGHLIGHT),
+            deselect = lambda handle: setHandlePen(handle, roi_style.HANDLE),
+            setter = setter,
+            getter = getter,
+            sigChanged = sigChanged,
+        )
+    @staticmethod
+    def getHandleXdata(handle, display):
+        return getHandleData(handle, display,
+            name = "x",
+            setter = lambda handle, x: setHandleX(handle, display, x),
+            getter = lambda handle: display.mapToREALITY(handle).x(),
+            sigChanged = handle.xChanged,
+        )
+    @staticmethod
+    def getHandleYdata(handle, display):
+        return getHandleData(handle, display,
+            name = "y",
+            setter = lambda handle, y: setHandleY(handle, display, y),
+            getter = lambda handle: display.mapToREALITY(handle).y(),
+            sigChanged = handle.yChanged,
+        )
+
+
+
+class ROIDataNode(ShapeDataNode):
+    def __init__(self, roi, tree):
+        shapeData = ShapeData.from_roi(roi)
+        super().__init__(shapeData, tree)
+    
 
 class ShapeDataTree(QTreeWidget):
     def __init__(self, *args, **kwargs):
