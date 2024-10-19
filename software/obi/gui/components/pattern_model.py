@@ -69,13 +69,6 @@ def buildNode(display, roi, tree):
 
     node = ROIDataNode(roi, tree)
 
-    for i, handle in enumerate(roi.getHandles()):
-        handleData = HandleData.from_handle(handle, name = f"Point {i+1}")
-        handleNode = HandleDataNode(handleData, node)
-        handleXNode = EditableShapeDataNode(getHandleXdata(handle, display), handleNode)
-        handleYNode = EditableShapeDataNode(getHandleYdata(handle, display), handleNode)
-
-
 
 @dataclass
 class ShapeData:
@@ -221,6 +214,15 @@ class ROIDataNode(ShapeDataNode):
     def __init__(self, roi, tree):
         shapeData = ShapeData.from_roi(roi)
         super().__init__(shapeData, tree)
+        self.setup()
+    def setup(self):
+        roi = self.shapedata.obj
+        for i, handle in enumerate(roi.getHandles()):
+            handleData = HandleData.from_handle(handle, name = f"Point {i+1}")
+            handleNode = HandleDataNode(handleData, self)
+            handleXNode = EditableShapeDataNode(HandleCoordData.getHandleXdata(handle, display), handleNode)
+            handleYNode = EditableShapeDataNode(HandleCoordData.getHandleYdata(handle, display), handleNode)
+
     
 
 class ShapeDataTree(QTreeWidget):
