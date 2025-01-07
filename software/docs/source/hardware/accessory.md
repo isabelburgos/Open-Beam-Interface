@@ -5,6 +5,6 @@
    :maxdepth: 2
 
    accessory/generic_selector.md
-
+   accessory/FEI.md
    
 ```
