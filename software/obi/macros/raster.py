@@ -32,6 +32,19 @@ class RasterScanCommand(BaseCommand):
                 dwell={self._dwell}, cookie={self._cookie}, output_mode={self._output_mode}"
     def _iter_chunks(self, latency):
         commands = bytearray()
+        def pre_line_unblank(x,y):
+            cmd = bytearray()
+            cmd.extend(bytes(BlankCommand(enable=False, inline=True)))
+            return cmd
+        
+        def post_line_blank(x, y):
+            cmd = bytearray()
+            cmd.extend(bytes(BlankCommand(enable=True, inline=False)))
+            cmd.extend(bytes(DelayCommand(delay=100)))
+            cmd.extend(bytes(VectorPixelCommand(x_coord=0, y_coord=y+1, dwell_time=1)))
+            return cmd
+
+
 
         def append_command(pixel_count):
             while pixel_count > 65536:
@@ -43,22 +56,29 @@ class RasterScanCommand(BaseCommand):
 
         pixel_count = 0
         total_dwell = 0
-        for n in range(self._x_range.count * self._y_range.count):
-            pixel_count += 1
-            total_dwell += self._dwell
-            if total_dwell >= latency:
-                append_command(pixel_count)
-                ## blank at the end of the last pixel
-                if self.frame_blank and n + 1 == self._x_range.count * self._y_range.count:
-                    commands.extend(bytes(BlankCommand(enable=True, inline=False)))
-                yield(commands, pixel_count)
-                commands = bytearray()
-                pixel_count = 0
-                total_dwell = 0
 
-        if pixel_count > 0:
-            append_command(pixel_count)
-            yield(commands, pixel_count)
+        for y in range(self._y_range.count):
+            for x in range(self._x_range.count):
+                pixel_count += 1
+                total_dwell += self._dwell
+
+                #at every line 
+                if x == 0:
+                    commands.extend(pre_line_unblank(x,y))
+                    append_command(pixel_count)
+                    commands.extend(post_line_blank(self._x_range.count,y))
+                    yield(commands, pixel_count)
+                    commands = bytearray()
+                    pixel_count = 0
+                    total_dwell = 0
+
+                    
+                
+
+
+        # if pixel_count > 0:
+        #     append_command(pixel_count)
+        #     yield(commands, pixel_count)
 
     @BaseCommand.log_transfer
     async def transfer(self, stream, *, latency:int=65536*65536):
@@ -100,7 +120,8 @@ class RasterScanCommand(BaseCommand):
                 if self.abort.is_set():
                     break
             self._logger.debug(f"recver: tokens={tokens}")
-            yield await self.recv_res(pixel_count, stream, self._output_mode)
+            pixels = await self.recv_res(pixel_count, stream, self._output_mode)
+            yield pixels[:len(pixels)-1]
         ## fly back
         await VectorPixelCommand(x_coord=self._x_range.start, y_coord=self._y_range.start, dwell_time=1).transfer(stream)
 
