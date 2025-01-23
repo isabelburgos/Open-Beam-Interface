@@ -98,12 +98,6 @@ class LiveScanControls(ScanParameters):
         self.start_btn.setEnabled(enabled)
         self.roi_btn.setEnabled(enabled)
 
-
-
-
-
-
-
 class PhotoScanControls(ScanParameters):
     def __init__(self):
         self.resolution_settings = SettingBoxWithDefaults("Resolution", 256, 16384, 4096, defaults=["512", "1024", "2048", "4096", "8192", "16384", "Custom"])
@@ -117,6 +111,11 @@ class PhotoScanControls(ScanParameters):
     def setEnabled(self, enabled=True):
         self.acq_btn.setEnabled(enabled)
 
+class DataBarControls(QVBoxLayout):
+    def __init__(self):
+        super().__init__()
+        self.addWidget(QLabel("Data Bar"))
+
 class CombinedScanControls(QWidget):
     def __init__(self):
         super().__init__()
@@ -125,15 +124,18 @@ class CombinedScanControls(QWidget):
 
         self.live = LiveScanControls()
         self.photo = PhotoScanControls()
-        self.line = QHLine()
+        self.data = DataBarControls()
 
         layout.addLayout(self.live)
-        layout.addWidget(self.line)
+        layout.addWidget(QHLine())
         layout.addLayout(self.photo)
+        layout.addLayout(self.data)
         self.setLayout(layout)
     def setEnabled(self, enabled=True):
         self.live.setEnabled(enabled)
         self.photo.setEnabled(enabled)
+
+
 
 
 if __name__ == "__main__":

@@ -9,7 +9,7 @@ from pyqtgraph.graphicsItems.TextItem import TextItem
 
 from PyQt6.QtWidgets import QSizePolicy
 from PyQt6.QtCore import pyqtSignal, pyqtSlot as Slot, QRectF, QPointF, QSize
-
+from PyQt6.QtGui import QPicture, QPainter, QFont
 logger = logging.getLogger()
 
 class ALine(pg.LineSegmentROI):
@@ -89,6 +89,33 @@ class DoubleLines(pg.GraphicsObject):
         self.lines.setRegion([p1, p_rot])
         self.sigRegionChanged.emit(d)
 
+
+class RectItem(pg.GraphicsObject):
+    def __init__(self):
+        pg.GraphicsObject.__init__(self)
+        self.generatePicture()
+    
+    def generatePicture(self):
+        ## pre-computing a QPicture object allows paint() to run much more quickly, 
+        ## rather than re-drawing the shapes every time.
+        self.picture = QPicture()
+        p = QPainter(self.picture)
+        p.setPen(pg.mkPen('w'))
+        p.drawRect(QRectF(0,1024,1024,100))
+        p.setFont(QFont('Arial', 114)) 
+        p.drawText(10, 1034, 1000, 90, 0, "Hello")
+        p.end()
+    def paint(self, p, *args):
+        p.drawPicture(0, 0, self.picture)
+    
+    def boundingRect(self):
+        ## boundingRect _must_ indicate the entire area that will be drawn on
+        ## or else we will get artifacts and possibly crashing.
+        ## (in this case, QPicture does all the work of computing the bounding rect for us)
+        return QRectF(self.picture.boundingRect())
+    
+
+
 class ImageDisplay(pg.GraphicsLayoutWidget):
     _logger = logger.getChild("ImageDisplay")
     sigResolutionChanged = pyqtSignal(tuple)
@@ -104,6 +131,10 @@ class ImageDisplay(pg.GraphicsLayoutWidget):
         self.live_img = pg.ImageItem(border='w',axisOrder="row-major")
         self.live_img.setImage(np.full((y_height, x_width), 0, np.uint8), rect = (0,0,x_width, y_height), autoLevels=False, autoHistogramRange=True)
         self.image_view.addItem(self.live_img)
+
+
+        self.d = RectItem()
+        self.image_view.addItem(self.d)
         
         self.data = np.zeros(shape = (y_height, x_width))
 
