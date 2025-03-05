@@ -121,7 +121,7 @@ class BlankCommand(LowLevelCommand):
 
     Args:
         enable: True if blanking, False if unblanking.
-        inline: True if blanking in sync with the next pixel, \
+        inline: True if blanking at the start of the next pixel, \
             False if blanking immediately upon command execution. Defaults to False.
     """
     bitlayout = BitLayout({"enable": 1, "inline": 1})
