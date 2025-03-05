@@ -433,8 +433,9 @@ class Supersampler(wiring.Component):
     stall_cycles: Out(16)
     stall_count_reset: In(1)
 
-    def __init__(self):
+    def __init__(self, delay_debug:bool=False):
         super().__init__()
+        self.delay_debug = delay_debug
 
         self.dac_stream_data = Signal.like(self.dac_stream.payload)
         self.encoder = PowerOfTwoDetector(16)
@@ -709,14 +710,14 @@ class CommandExecutor(wiring.Component):
     output_mode: Out(2)
 
 
-    def __init__(self, *, out_only:bool=False, adc_latency=8, ext_switch_delay=960000,
+    def __init__(self, *, out_only:bool=False, delay_debug:bool=False, adc_latency=8, ext_switch_delay=960000,
                 transforms: Transforms=Transforms(False, False, False)):
         self.adc_latency = adc_latency
         # Time for external control relay/switch to actuate
         self.ext_switch_delay = ext_switch_delay
         self.transforms = transforms
 
-        self.supersampler = Supersampler()
+        self.supersampler = Supersampler(delay_debug=delay_debug)
 
         self.out_only = out_only
         super().__init__()
@@ -1035,7 +1036,7 @@ obi_resources  = [
 class OBISubtarget(wiring.Component):
     def __init__(self, *, ports, out_fifo, in_fifo, #led, control, data, 
                         ext_switch_delay=0, transforms: Transforms, 
-                        benchmark_counters=None, loopback=False, out_only=False):
+                        benchmark_counters=None, loopback=False, out_only=False, delay_debug=False):
         self.ports            = ports
         self.out_fifo         = out_fifo
         self.in_fifo          = in_fifo
@@ -1044,9 +1045,10 @@ class OBISubtarget(wiring.Component):
         # self.data             = data
 
         self.ext_switch_delay = ext_switch_delay
-        self.transforms = transforms
+        self.transforms       = transforms
         self.loopback         = loopback
         self.out_only         = out_only
+        self.delay_debug      = delay_debug
 
         if not benchmark_counters == None:
             self.benchmark = True
@@ -1062,7 +1064,7 @@ class OBISubtarget(wiring.Component):
 
         ## core modules and interconnections
         m.submodules.parser     = parser     = CommandParser()
-        m.submodules.executor   = executor   = CommandExecutor(out_only=self.out_only, ext_switch_delay=self.ext_switch_delay, transforms=self.transforms)
+        m.submodules.executor   = executor   = CommandExecutor(out_only=self.out_only, delay_debug = self.delay_debug, ext_switch_delay=self.ext_switch_delay, transforms=self.transforms)
         m.submodules.serializer = serializer = ImageSerializer()
 
         wiring.connect(m, parser.cmd_stream, executor.cmd_stream)
@@ -1246,6 +1248,9 @@ class OBIApplet(GlasgowApplet):
             help = "use FastBusController instead of BusController; don't use ADC")
         parser.add_argument("--ext_switch_delay", type=int, default=0,
             help="time for external control switch to actuate, in ms")
+        parser.add_argument("--delay_debug",
+            dest = "delay_debug", action = 'store_true',
+            help = "enable debug mode: DELAY")
 
 
     def build(self, target, args):
@@ -1273,7 +1278,8 @@ class OBIApplet(GlasgowApplet):
             "out_fifo": iface.get_out_fifo(depth=512),
             "loopback": args.loopback,
             "transforms": Transforms(args.xflip, args.yflip, args.rotate90),
-            "out_only": args.out_only
+            "out_only": args.out_only,
+            "delay_debug": args.delay_debug
         }
 
         if args.ext_switch_delay:
