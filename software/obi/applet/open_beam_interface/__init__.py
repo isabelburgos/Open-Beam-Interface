@@ -490,6 +490,9 @@ class Supersampler(wiring.Component):
             m.d.comb += selected_sum.eq(last_p2_sum)
         m.d.comb += self.adc_stream.payload.adc_code.eq(selected_sum >> self.encoder.o)
 
+        if self.delay_debug:
+            m.d.comb += self.adc_stream.payload.adc_code.eq(sample_counter << 6) #align to 14 bits
+
         with m.FSM():
             with m.State("Start"):
                 m.d.comb += self.super_adc_stream.ready.eq(1)
