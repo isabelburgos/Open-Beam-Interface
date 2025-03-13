@@ -22,6 +22,7 @@ class OBIAppletArguments:
                 pin_set_ebeam_blank=None, pin_set_ibeam_blank=None,
                 xflip=None, yflip=None, rotate90=None, pin_set_line_clock=None, pin_set_frame_clock=None,
                 loopback=None, out_only=None, benchmark=None, ext_switch_delay=None,
+                delay_debug=True,
                 endpoint=('tcp', 'localhost', 2224))
     def load_toml(self):
         from tomlkit.toml_file import TOMLFile
