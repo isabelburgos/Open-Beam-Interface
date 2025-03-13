@@ -854,7 +854,7 @@ class OBIAppletTestCase(unittest.TestCase):
         test_exec_5()
         test_exec_6()
 
-    @unittest.skip("Skipped applet test case")
+    # @unittest.skip("Skipped applet test case")
     def test_all(self):
         #TODO: Fix this simulation
         from amaranth import Module
@@ -876,20 +876,22 @@ class OBIAppletTestCase(unittest.TestCase):
                 logger.debug(vars(obi_subtarget))
                 m = Module()
                 m.submodules["board"] = board = OBI_Board()
-                m.d.comb += [
-                            obi_subtarget.data.i.eq(board.a_latch_chip.q),
-                            board.x_latch_chip.d.eq(obi_subtarget.data.o),
-                            board.y_latch_chip.d.eq(obi_subtarget.data.o),
-                            board.a_adc_chip.a.eq(board.x_dac_chip.a),
-                            board.bus.dac_x_le_clk.eq(obi_subtarget.control.x_latch.o),
-                            board.bus.dac_y_le_clk.eq(obi_subtarget.control.y_latch.o),
-                            board.bus.adc_le_clk.eq(obi_subtarget.control.a_latch.o),
-                            board.bus.adc_oe.eq(obi_subtarget.control.a_enable.o),
-                            board.bus.adc_clk.eq(obi_subtarget.control.a_clock.o),
-                            board.bus.dac_clk.eq(obi_subtarget.control.d_clock.o),
-                            board.adc_input.eq(board.x_dac_chip.a)
-                            ]
-                self.target.add_submodule(m)
+                print(vars(obi_subtarget.ports))
+                # m.d.comb += [
+                #             obi_subtarget.data.i.eq(board.a_latch_chip.q),
+                #             board.x_latch_chip.d.eq(obi_subtarget.data.o),
+                #             board.y_latch_chip.d.eq(obi_subtarget.data.o),
+                #             board.a_adc_chip.a.eq(board.x_dac_chip.a),
+                #             board.bus.dac_x_le_clk.eq(obi_subtarget.control.x_latch.o),
+                #             board.bus.dac_y_le_clk.eq(obi_subtarget.control.y_latch.o),
+                #             board.bus.adc_le_clk.eq(obi_subtarget.control.a_latch.o),
+                #             board.bus.adc_oe.eq(obi_subtarget.control.a_enable.o),
+                #             board.bus.adc_clk.eq(obi_subtarget.control.a_clock.o),
+                #             board.bus.dac_clk.eq(obi_subtarget.control.d_clock.o),
+                #             board.adc_input.eq(board.x_dac_chip.a)
+                #             ]
+                # wiring.connect(m, board.bus, obi_subtarget.bus)
+                # self.target.add_submodule(m)
 
             ## tests that actually test against output
             
@@ -1016,9 +1018,9 @@ class OBIAppletTestCase(unittest.TestCase):
         test_case = OBIApplet_TestCase()
         test_case.setUp()
         test_case.test_build()
-        test_case.test_sync_cookie()
-        test_case.test_benchmark()
-        test_case.test_vector_blank()
+        # test_case.test_sync_cookie()
+        # test_case.test_benchmark()
+        # test_case.test_vector_blank()
         test_case.test_loopback_raster()
-        test_case.test_loopback_vector()
+        # test_case.test_loopback_vector()
         #test_case.test_loopback_multimode()
