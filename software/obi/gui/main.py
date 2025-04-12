@@ -14,8 +14,9 @@ from PyQt6.QtWidgets import (QHBoxLayout, QMainWindow, QDialog, QProgressBar,
                              QDockWidget, QSizePolicy)
 import pyqtgraph as pg
 
-import qasync
-from qasync import asyncSlot, asyncClose, QApplication, QEventLoop
+# import qasync
+# from qasync import asyncSlot, asyncClose, QApplication, QEventLoop
+from .qtasync import asyncSlot, QtAsyncRunner
 
 from obi.gui.components import ImageDisplay, CombinedScanControls, CombinedPatternControls, BeamControl, MagCalWidget
 
@@ -242,24 +243,34 @@ class Window(QMainWindow):
         else: 
             self.image_display.remove_ROI()
 
-def run_gui():
-    app = QApplication(sys.argv)
+# def run_gui():
+#     app = QApplication(sys.argv)
 
-    event_loop = QEventLoop(app)
-    asyncio.set_event_loop(event_loop)
+#     event_loop = QEventLoop(app)
+#     asyncio.set_event_loop(event_loop)
 
-    app_close_event = asyncio.Event()
-    app.aboutToQuit.connect(app_close_event.set)
+#     app_close_event = asyncio.Event()
+#     app.aboutToQuit.connect(app_close_event.set)
 
-    window = Window()
-    # if not args.window_size == None:
-    #     window.resize(args.window_size[0], args.window_size[1])
+#     window = Window()
+#     # if not args.window_size == None:
+#     #     window.resize(args.window_size[0], args.window_size[1])
     
-    window.show()
+#     window.show()
 
-    with event_loop:
-        event_loop.run_until_complete(app_close_event.wait())
+#     with event_loop:
+#         event_loop.run_until_complete(app_close_event.wait())
+
+async def run_gui():
+    qt = QtAsyncRunner()
+    qt.start()
+
+    win = Window()
+    win.show()
+
+    await asyncio.sleep(10)
+    await qt.stop()
 
 
 if __name__ == "__main__":
-    run_gui()
+    asyncio.run(run_gui())
