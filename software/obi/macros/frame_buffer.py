@@ -279,6 +279,9 @@ class FrameBuffer:
         last_lines = len(res)//frame._x_count
         if last_lines > 0:
             frame.fill_lines(res[:frame._x_count*last_lines])
+
+        # blank at end of frame
+        await self.conn.transfer(BlankCommand(enable=False, inline=True))
         yield frame
 
     async def capture_frame(self, *, x_range:DACCodeRange, y_range:DACCodeRange, dwell_time:int, **kwargs):
