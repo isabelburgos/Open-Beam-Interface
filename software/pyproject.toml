@@ -7,13 +7,12 @@ authors = [
     {name = "isabelburgos", email = "isabel@nanographs.io"},
 ]
 dependencies = [
-    "glasgow[builtin-toolchain] @ git+https://github.com/GlasgowEmbedded/glasgow@main#subdirectory=software",
     "numpy>=2.0.1",
     "tifffile>=2024.7.21",
     "Pillow>=10.4.0",
     "tomlkit>=0.13.0",
 ]
-requires-python = "!=3.10.0,!=3.10.1,!=3.10.2,~=3.9"
+requires-python = "!=3.10.1,!=3.10.2, >3.10.0"
 readme = "README.md"
 license = {text = "\"0BSD OR Apache-2.0\""}
 
@@ -59,4 +58,5 @@ test.cmd = "python -m unittest"
 [tool.pdm.dev-dependencies]
 dev = [
     "rich>=13.7.1",
+    "-e file:///Users/isabelburgos/glasgow/software#egg=glasgow",
 ]
