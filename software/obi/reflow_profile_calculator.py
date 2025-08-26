@@ -472,16 +472,31 @@ class MainWindow(QtWidgets.QMainWindow):
         rightWrap = QtWidgets.QWidget()
         rightLay = QtWidgets.QVBoxLayout(rightWrap)
 
-        # --- Serial Console (moved from middle; now at top of right pane) ---
-        serialGroup = QtWidgets.QGroupBox("Serial Console")
-        sLay = QtWidgets.QVBoxLayout(serialGroup)
-
-        # Row: status + port/baud + refresh + connect/disconnect
-        rowConn = QtWidgets.QHBoxLayout()
+        # --- Serial Console (collapsible header + body) ---
+        # Header (always visible): toggle, title, status, connect/disconnect
+        serialHeader = QtWidgets.QHBoxLayout()
+        self.serialToggle = QtWidgets.QToolButton()
+        self.serialToggle.setAutoRaise(True)
+        self.serialToggle.setArrowType(QtCore.Qt.ArrowType.RightArrow)  # collapsed by default
+        serialHeader.addWidget(self.serialToggle)
+        serialHeader.addWidget(QtWidgets.QLabel("Serial Console"))
+        serialHeader.addSpacing(8)
         self.connStatusLabel = QtWidgets.QLabel("Disconnected")
-        rowConn.addWidget(QtWidgets.QLabel("Status:"))
-        rowConn.addWidget(self.connStatusLabel)
-        rowConn.addSpacing(12)
+        serialHeader.addWidget(self.connStatusLabel)
+        serialHeader.addStretch(1)
+        self.connectBtn = QtWidgets.QPushButton("Connect")
+        self.disconnectBtn = QtWidgets.QPushButton("Disconnect"); self.disconnectBtn.setEnabled(False)
+        serialHeader.addWidget(self.connectBtn)
+        serialHeader.addWidget(self.disconnectBtn)
+        rightLay.addLayout(serialHeader)
+
+        # Body (collapsible content): port/baud, transmit, commands, log
+        self.serialContent = QtWidgets.QWidget()
+        sLay = QtWidgets.QVBoxLayout(self.serialContent)
+        sLay.setContentsMargins(0, 0, 0, 0)
+
+        # Row: port/baud + refresh (connect/disconnect moved to header)
+        rowConn = QtWidgets.QHBoxLayout()
         self.portCombo = QtWidgets.QComboBox(); self.portCombo.setEditable(True)
         self.refreshBtn = QtWidgets.QPushButton("Refresh")
         self.baudEdit = QtWidgets.QLineEdit("115200")
@@ -491,10 +506,6 @@ class MainWindow(QtWidgets.QMainWindow):
         rowConn.addSpacing(10)
         rowConn.addWidget(QtWidgets.QLabel("Baud:")); rowConn.addWidget(self.baudEdit)
         rowConn.addStretch(1)
-        self.connectBtn = QtWidgets.QPushButton("Connect")
-        self.disconnectBtn = QtWidgets.QPushButton("Disconnect"); self.disconnectBtn.setEnabled(False)
-        rowConn.addWidget(self.connectBtn)
-        rowConn.addWidget(self.disconnectBtn)
         sLay.addLayout(rowConn)
 
         # Transmit box
@@ -526,7 +537,9 @@ class MainWindow(QtWidgets.QMainWindow):
         sLay.addWidget(self.tsChk)
         sLay.addWidget(self.clearLogBtn)
 
-        rightLay.addWidget(serialGroup)
+        rightLay.addWidget(self.serialContent)
+        # collapsed by default
+        self.serialContent.setVisible(False)
 
         # ==========================
         # Right pane: Bake Control
@@ -551,6 +564,22 @@ class MainWindow(QtWidgets.QMainWindow):
         headerLay.addWidget(self.btnAbortRun)
         rightLay.addLayout(headerLay)
 
+        # --- Manual Control ---
+        manualGroup = QtWidgets.QGroupBox("Manual Control")
+        mlay = QtWidgets.QHBoxLayout(manualGroup)
+        mlay.addWidget(QtWidgets.QLabel("Setpoint (°C):"))
+        self.manualSetpoint = QtWidgets.QSpinBox()
+        self.manualSetpoint.setRange(0, 300)
+        self.manualSetpoint.setValue(25)
+        mlay.addWidget(self.manualSetpoint)
+        mlay.addStretch(1)
+        self.btnManualStart = QtWidgets.QPushButton("Start / Update")
+        self.btnManualStop = QtWidgets.QPushButton("Stop Manual")
+        self.btnManualStop.setEnabled(False)
+        mlay.addWidget(self.btnManualStart)
+        mlay.addWidget(self.btnManualStop)
+        rightLay.addWidget(manualGroup)
+
         # Live telemetry labels
         tele = QtWidgets.QGroupBox("Live Telemetry")
         tlay = QtWidgets.QGridLayout(tele)
@@ -573,6 +602,11 @@ class MainWindow(QtWidgets.QMainWindow):
         tlay.addWidget(QtWidgets.QLabel("Temp2 (°C):"), row, 0); tlay.addWidget(self.t2, row, 1); row += 1
         tlay.addWidget(QtWidgets.QLabel("Temp3 (°C):"), row, 0); tlay.addWidget(self.t3, row, 1); row += 1
         rightLay.addWidget(tele)
+        # Prevent the telemetry section from stretching vertically
+        tele.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding,
+                           QtWidgets.QSizePolicy.Policy.Fixed)
+        # Lock its max height to its size hint (plus a tiny buffer)
+        tele.setMaximumHeight(tele.sizeHint().height() + 8)
 
         # Telemetry plot
         self.telePlot = pg.PlotWidget(background="w")
@@ -594,6 +628,45 @@ class MainWindow(QtWidgets.QMainWindow):
         self.configure_plot_axes(self.telePlot, disable_mouse=False)
         rightLay.addWidget(self.telePlot, 1)
 
+        # Additional curves (initially empty)
+        self.curveSet = self.telePlot.plot([], [], pen=pg.mkPen('k', width=1), name="Set")
+        self.curveT0 = self.telePlot.plot([], [], pen=pg.mkPen((50, 100, 200), width=1), name="Temp0")
+        self.curveT1 = self.telePlot.plot([], [], pen=pg.mkPen((0, 150, 0), width=1), name="Temp1")
+        self.curveT2 = self.telePlot.plot([], [], pen=pg.mkPen((200, 120, 0), width=1), name="Temp2")
+        self.curveT3 = self.telePlot.plot([], [], pen=pg.mkPen((120, 0, 180), width=1), name="Temp3")
+
+        # Series display controls
+        seriesGroup = QtWidgets.QGroupBox("Series Display")
+        srl = QtWidgets.QGridLayout(seriesGroup)
+        self.chkShowActual = QtWidgets.QCheckBox("Actual")
+        self.chkShowActual.setChecked(True)
+        self.chkShowTarget = QtWidgets.QCheckBox("Target")
+        self.chkShowTarget.setChecked(True)
+        self.chkShowSet = QtWidgets.QCheckBox("Setpoint")
+        self.chkShowSet.setChecked(False)
+        self.chkShowT0 = QtWidgets.QCheckBox("Temp0")
+        self.chkShowT1 = QtWidgets.QCheckBox("Temp1")
+        self.chkShowT2 = QtWidgets.QCheckBox("Temp2")
+        self.chkShowT3 = QtWidgets.QCheckBox("Temp3")
+        # layout
+        srl.addWidget(self.chkShowActual, 0, 0)
+        srl.addWidget(self.chkShowTarget, 0, 1)
+        srl.addWidget(self.chkShowSet,    0, 2)
+        srl.addWidget(self.chkShowT0,     1, 0)
+        srl.addWidget(self.chkShowT1,     1, 1)
+        srl.addWidget(self.chkShowT2,     1, 2)
+        srl.addWidget(self.chkShowT3,     1, 3)
+        rightLay.addWidget(seriesGroup)
+
+        # Download telemetry CSV button
+        dlRow = QtWidgets.QHBoxLayout()
+        self.btnSaveTelemetry = QtWidgets.QPushButton("Download Telemetry CSV…")
+        dlRow.addStretch(1)
+        dlRow.addWidget(self.btnSaveTelemetry)
+        rightLay.addLayout(dlRow)
+
+        rightLay.addStretch(1)
+
         # Add stretch at end of LEFT pane so extra space is pushed below (prevents plot from stretching)
         leftLay.addStretch(1)
 
@@ -609,6 +682,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.splitLR = splitLR
         # Keep plot sizes matched when splitters move
         splitLR.splitterMoved.connect(lambda *_: self.update_plot_sizes())
+
+        # Run/Manual initial state flags (ensure defined before any enablement)
+        self._run_active: bool = False
+        self._manual_active: bool = False
 
         # Serial defaults
         self.default_port = "/dev/tty.usbserial-BG01OX7L"
@@ -628,7 +705,33 @@ class MainWindow(QtWidgets.QMainWindow):
         self.btnStop.clicked.connect(lambda: self.send_ascii("stop"))
         self.txEdit.returnPressed.connect(self.on_send_clicked)
         self.btnCopyTarget.clicked.connect(self.on_copy_target)
+        self.serialToggle.clicked.connect(self.on_serial_toggle)
+        self.btnManualStart.clicked.connect(self.on_manual_start)
+        self.btnManualStop.clicked.connect(self.on_manual_stop)
+        self.btnSaveTelemetry.clicked.connect(self.on_save_telemetry_csv)
+        # Series visibility toggles
+        for chk in (self.chkShowActual, self.chkShowTarget, self.chkShowSet, self.chkShowT0, self.chkShowT1, self.chkShowT2, self.chkShowT3):
+            chk.toggled.connect(self.update_series_visibility)
+        # Ensure UI reflects initial disconnected state on startup
+        self.set_connected_enabled(False)
+        # Ensure serial/bake init runs even if the Serial panel stays collapsed
+        self.init_serial_once()
+    def on_serial_toggle(self):
+        vis = self.serialContent.isVisible()
+        self.serialContent.setVisible(not vis)
+        self.serialToggle.setArrowType(
+            QtCore.Qt.ArrowType.DownArrow if not vis else QtCore.Qt.ArrowType.RightArrow
+        )
+        # keep plots sized nicely after the layout change
+        QtCore.QTimer.singleShot(0, self.update_plot_sizes)
+        # Run one-time init if not yet done
+        self.init_serial_once()
 
+    def init_serial_once(self):
+        """Run serial/bake one-time initialization and attempt auto-connect if not connected."""
+        if getattr(self, '_serial_inited', False):
+            return
+        self._serial_inited = True
         # Bake profile runner
         self.btnRunBuilt.clicked.connect(self.on_run_built_profile)
         self.btnAbortRun.clicked.connect(self.on_abort_run_profile)
@@ -645,14 +748,24 @@ class MainWindow(QtWidgets.QMainWindow):
         self.t0s: List[float] = []  # time axis (secs since first point)
         self.actuals: List[float] = []
         self.setpoints: List[float] = []
+        self.t0_list: List[float] = []
+        self.t1_list: List[float] = []
+        self.t2_list: List[float] = []
+        self.t3_list: List[float] = []
+        # Full-row buffer for CSV export
+        self.teleRows: List[Tuple[str, float, Optional[float], Optional[float], Optional[float], Optional[int], Optional[int], Optional[str], Optional[float], Optional[float], Optional[float], Optional[float]]] = []
 
         # Init ports and size sync
         self.refresh_ports()
         QtCore.QTimer.singleShot(0, self.update_plot_sizes)
-        # Start with controls disabled until connected
-        self.set_connected_enabled(False)
-        # Try to auto-connect on startup (uses selected/default port + baud)
-        QtCore.QTimer.singleShot(0, self.on_connect)
+
+        # Reflect current state instead of forcing disabled
+        self.set_connected_enabled(self.worker is not None)
+        if self.worker is not None:
+            self.connStatusLabel.setText("Connected")
+        else:
+            # Try auto-connect only if not already connected
+            QtCore.QTimer.singleShot(0, self.on_connect)
 
     def set_connected_enabled(self, connected: bool):
         # Transmit section
@@ -670,6 +783,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.btnRunBuilt.setEnabled(connected)
         # Abort is only enabled during an active run
         self.btnAbortRun.setEnabled(connected and self._run_active)
+        # Manual Control
+        if hasattr(self, 'manualSetpoint'):
+            self.manualSetpoint.setEnabled(connected and not self._run_active)
+            self.btnManualStart.setEnabled(connected and not self._run_active)
+            self.btnManualStop.setEnabled(connected and self._manual_active)
     def build_run_queue_from_profile(self) -> List[int]:
         """Return a list of integer setpoints derived from the last built profile.
         Falls back to the 'Target Temperature' copied series if available.
@@ -716,11 +834,65 @@ class MainWindow(QtWidgets.QMainWindow):
         self._run_active = False
         self.btnRunBuilt.setEnabled(True)
         self.btnAbortRun.setEnabled(False)
+        # Allow manual start again now that auto run has stopped
+        if hasattr(self, 'btnManualStart'):
+            self.btnManualStart.setEnabled(True)
         try:
             self.send_ascii("stop")
         except Exception:
             pass
         self.log("[RUN] Aborted")
+
+    def on_manual_start(self):
+        """Enter or update Manual bake mode at the requested setpoint.
+        Cancels any automatic run in progress to avoid interference.
+        """
+        if self.worker is None:
+            self.log("[UI] Not connected")
+            return
+        # Cancel automatic run if active
+        if self._run_active:
+            self.on_abort_run_profile()
+        sp = int(self.manualSetpoint.value())
+        try:
+            # Continuous bake at setpoint (no time argument)
+            self.send_ascii(f"bake {sp}")
+        except Exception as e:
+            self.log(f"[ERR] {e}")
+            return
+        self._manual_active = True
+        # Reset live telemetry buffers/epoch so manual run shows a fresh plot
+        self._t0_epoch = None
+        self.t0s.clear()
+        self.actuals.clear()
+        # Clear target overlays (manual uses controller setpoint instead)
+        self.curveTargetLine.setData([], [])
+        self.curveTargetPts.setData([], [])
+        self.curveActual.setData([], [])
+        # Keep axes fixed and allow zoom
+        self.configure_plot_axes(self.telePlot, disable_mouse=False)
+        self.btnManualStop.setEnabled(True)
+        # Block starting auto run while manual is active
+        self.btnRunBuilt.setEnabled(False)
+        # Refresh connected-enabled matrix
+        self.set_connected_enabled(True)
+        self.log(f"[MANUAL] Bake setpoint -> {sp}°C")
+
+    def on_manual_stop(self, log_only: bool = False):
+        """Exit Manual bake mode (sends 'stop' unless log_only)."""
+        if not log_only:
+            try:
+                self.send_ascii("stop")
+            except Exception:
+                pass
+        self._manual_active = False
+        self.btnRunBuilt.setEnabled(True)
+        self.btnManualStop.setEnabled(False)
+        self.set_connected_enabled(True)
+        # Keep axes stable (optional but keeps behavior consistent)
+        self.configure_plot_axes(self.telePlot, disable_mouse=False)
+        if not log_only:
+            self.log("[MANUAL] Stopped")
 
     def on_profile_tick(self):
         if not self._run_active:
@@ -913,6 +1085,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.configure_plot_axes(self.telePlot, disable_mouse=False)
         # Keep axes fixed
         self.configure_plot_axes(self.telePlot, disable_mouse=False)
+        self.update_series_visibility()
 
     # -------- Serial helpers --------
     def log(self, text: str):
@@ -946,6 +1119,13 @@ class MainWindow(QtWidgets.QMainWindow):
         except ValueError:
             self.log("[UI] Invalid baud")
             return
+        # Reflect connecting state immediately
+        self.connStatusLabel.setText("Connecting…")
+        self.connectBtn.setEnabled(False)
+        self.portCombo.setEnabled(False)
+        self.refreshBtn.setEnabled(False)
+        self.baudEdit.setEnabled(False)
+        QtWidgets.QApplication.processEvents()
         self.worker = SerialWorker(port, baud, self.proto)
         self.worker.rx_text.connect(self.on_rx_text)
         self.worker.rx_raw.connect(self.on_rx_raw)
@@ -955,18 +1135,70 @@ class MainWindow(QtWidgets.QMainWindow):
         self.worker.start()
 
     def on_disconnect(self):
-        if self.worker:
-            self.worker.stop()
-            self.worker.wait(800)
-            self.worker = None
-        # Stop any active run
+        w = self.worker
+        if not w:
+            return
+        # Disable UI actions immediately to avoid re-entrancy
+        self.disconnectBtn.setEnabled(False)
+        self.connectBtn.setEnabled(True)
+        self.portCombo.setEnabled(True)
+        self.refreshBtn.setEnabled(True)
+        self.baudEdit.setEnabled(True)
+
+        # Stop any active run BEFORE stopping the worker
         if hasattr(self, 'profileTimer'):
-            self.profileTimer.stop()
+            try:
+                self.profileTimer.stop()
+            except Exception:
+                pass
         self._run_active = False
         self.btnRunBuilt.setEnabled(True)
         self.btnAbortRun.setEnabled(False)
+
+        # Detach signals to prevent late emissions into deleted UI during teardown
+        try:
+            w.rx_text.disconnect(self.on_rx_text)
+        except Exception:
+            pass
+        try:
+            w.rx_raw.disconnect(self.on_rx_raw)
+        except Exception:
+            pass
+        try:
+            w.error.disconnect()
+        except Exception:
+            pass
+        try:
+            w.status.disconnect()
+        except Exception:
+            pass
+        try:
+            w.connected_changed.disconnect(self.on_conn_changed)
+        except Exception:
+            pass
+
+        # Ask the thread to stop and wait for clean exit
+        try:
+            w.stop()
+        except Exception:
+            pass
+        try:
+            w.wait(1500)
+        except Exception:
+            pass
+        try:
+            w.deleteLater()
+        except Exception:
+            pass
+
+        # Clear reference only after the thread is fully stopped
+        self.worker = None
+
+        # Update UI state
         self.set_connected_enabled(False)
         self.connStatusLabel.setText("Disconnected")
+        self._manual_active = False
+        self.log("[UI] Disconnected")
 
     def on_conn_changed(self, ok: bool):
         self.connectBtn.setEnabled(not ok)
@@ -988,6 +1220,9 @@ class MainWindow(QtWidgets.QMainWindow):
         if not self.worker:
             self.log("[UI] Not connected")
             return
+        # If manual mode is active, stop it to avoid interference
+        if getattr(self, '_manual_active', False):
+            self.on_manual_stop(log_only=True)
         data = self.proto.encode_ascii(line)
         self.worker.send_bytes(data)
         self.log(f"[TX] {line}")
@@ -1016,16 +1251,25 @@ class MainWindow(QtWidgets.QMainWindow):
     @QtCore.pyqtSlot(str)
     def on_rx_text(self, line: str):
         sline = line.strip()
-        # Telemetry header
+        # Telemetry header or auto-bootstrap
         if sline.startswith("# Time,"):
             hdr = [h.strip() for h in sline.lstrip('#').split(',')]
             self.telemetry_colnames = [h.strip() for h in hdr]
             self.telemetry_cols = {name: idx for idx, name in enumerate(self.telemetry_colnames)}
             self.telemetry_active = True
-        elif self.telemetry_active and ',' in sline and not sline.startswith('#'):
+        elif ',' in sline and not sline.startswith('#'):
             parts = [p.strip() for p in sline.split(',')]
-            if len(parts) >= len(self.telemetry_colnames) and self.telemetry_colnames:
+            # If already active and counts match, just update
+            if self.telemetry_active and self.telemetry_colnames and len(parts) >= len(self.telemetry_colnames):
                 self.update_telemetry_from_parts(parts)
+            else:
+                # Try to bootstrap if header wasn't seen (common when switching to Manual quickly)
+                default_hdr = ["Time", "Temp0", "Temp1", "Temp2", "Temp3", "Set", "Actual", "Heat", "Fan", "ColdJ", "Mode"]
+                if len(parts) >= len(default_hdr):
+                    self.telemetry_colnames = default_hdr
+                    self.telemetry_cols = {name: idx for idx, name in enumerate(self.telemetry_colnames)}
+                    self.telemetry_active = True
+                    self.update_telemetry_from_parts(parts)
         if not self.rxHexChk.isChecked():
             self.log(line)
 
@@ -1070,19 +1314,102 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Plot series (use wall time spacing)
         now = datetime.now().timestamp()
-        if not hasattr(self, '_t0_epoch'):
+        if getattr(self, '_t0_epoch', None) is None:
             self._t0_epoch = now
-        tsec = now - self._t0_epoch
+        tsec = now - float(self._t0_epoch)
         if actual is not None:
             self.t0s.append(tsec); self.actuals.append(actual)
+        if setp is not None:
+            self.setpoints.append(setp)
+        else:
+            self.setpoints.append(None)
+        self.t0_list.append(t0 if t0 is not None else None)
+        self.t1_list.append(t1 if t1 is not None else None)
+        self.t2_list.append(t2 if t2 is not None else None)
+        self.t3_list.append(t3 if t3 is not None else None)
+
+        # Keep a full record for CSV export (use ISO timestamp)
+        iso = datetime.fromtimestamp(now).isoformat(timespec='milliseconds')
+        self.teleRows.append((
+            iso, float(tsec), setp, actual, cj, heat, fan, mode or "",
+            t0, t1, t2, t3
+        ))
+
         # Ignore controller 'Set' in the plot to reserve dashed line for Target copy-in
         # keep last N points
         N = 1200
         if len(self.t0s) > N:
-            self.t0s = self.t0s[-N:]; self.actuals = self.actuals[-N:]; self.setpoints = self.setpoints[-N:]
-        self.curveActual.setData(self.t0s, self.actuals)
-        # Keep live plot framing fixed
+            self.t0s = self.t0s[-N:]
+            self.actuals = self.actuals[-N:]
+            self.setpoints = self.setpoints[-N:]
+            self.t0_list = self.t0_list[-N:]
+            self.t1_list = self.t1_list[-N:]
+            self.t2_list = self.t2_list[-N:]
+            self.t3_list = self.t3_list[-N:]
+        if len(self.teleRows) > N:
+            self.teleRows = self.teleRows[-N:]
+        self.update_telemetry_curves()
         self.configure_plot_axes(self.telePlot, disable_mouse=False)
+
+
+    def update_telemetry_curves(self):
+        """Push current buffers to curves, respecting None gaps for sensors."""
+        # Actual
+        self.curveActual.setData(self.t0s, [v for v in self.actuals])
+        # Setpoint
+        if any(v is not None for v in self.setpoints):
+            self.curveSet.setData(self.t0s, [v if v is not None else float('nan') for v in self.setpoints])
+        else:
+            self.curveSet.setData([], [])
+        # Individual sensors
+        def _nanify(lst):
+            return [v if v is not None else float('nan') for v in lst]
+        if self.t0_list:
+            self.curveT0.setData(self.t0s, _nanify(self.t0_list))
+            self.curveT1.setData(self.t0s, _nanify(self.t1_list))
+            self.curveT2.setData(self.t0s, _nanify(self.t2_list))
+            self.curveT3.setData(self.t0s, _nanify(self.t3_list))
+        else:
+            for c in (self.curveT0, self.curveT1, self.curveT2, self.curveT3):
+                c.setData([], [])
+        # Apply current visibility settings
+        self.update_series_visibility()
+
+    def update_series_visibility(self):
+        """Show/hide curves based on checkbox state."""
+        self.curveActual.setVisible(self.chkShowActual.isChecked())
+        # Target is two curves
+        show_target = self.chkShowTarget.isChecked()
+        self.curveTargetLine.setVisible(show_target)
+        self.curveTargetPts.setVisible(show_target)
+        self.curveSet.setVisible(self.chkShowSet.isChecked())
+        self.curveT0.setVisible(self.chkShowT0.isChecked())
+        self.curveT1.setVisible(self.chkShowT1.isChecked())
+        self.curveT2.setVisible(self.chkShowT2.isChecked())
+        self.curveT3.setVisible(self.chkShowT3.isChecked())
+
+
+    def on_save_telemetry_csv(self):
+        """Export collected live telemetry to CSV. If empty, informs the user."""
+        if not hasattr(self, 'teleRows') or not self.teleRows:
+            QtWidgets.QMessageBox.information(self, "No Telemetry", "No telemetry data to save yet.")
+            return
+        path, _ = QtWidgets.QFileDialog.getSaveFileName(
+            self, "Save Telemetry CSV", "telemetry.csv", "CSV Files (*.csv)"
+        )
+        if not path:
+            return
+        import csv
+        try:
+            with open(path, "w", newline="") as f:
+                w = csv.writer(f)
+                w.writerow(["timestamp_iso", "t_sec", "set_c", "actual_c", "coldj_c", "heat", "fan", "mode", "temp0_c", "temp1_c", "temp2_c", "temp3_c"]) 
+                for row in self.teleRows:
+                    w.writerow(row)
+        except Exception as e:
+            QtWidgets.QMessageBox.critical(self, "Error", f"Failed to save telemetry: {e}")
+            return
+        self.statusBar().showMessage(f"Saved telemetry: {path}", 4000)
 
 
 def main():
