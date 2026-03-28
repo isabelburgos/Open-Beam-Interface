@@ -1,8 +1,13 @@
-from .structs import BitLayout, ByteLayout, CmdType, OutputMode, OutputEnable, BeamType, u14, u16, DwellTime, DACCodeRange
+from .structs import (BitLayout, ByteLayout, CmdType,
+                    OutputMode, OutputEnable, BeamType, 
+                    u14, u16, DwellTime, DACCodeRange, CMD_SHAPE)
 from . import BaseCommand
 
 from amaranth import *
 from amaranth.lib import enum, data, wiring
+
+import json
+import inspect
 
 class LowLevelCommand(BaseCommand):
     """
@@ -24,6 +29,22 @@ class LowLevelCommand(BaseCommand):
                                 else i for i in name_str[1:]])  #RasterPixelCommand -> "raster_pixel"
         header_funcstr = cls.bitlayout.pack_fn(cls.cmdtype) ## bitwise operations code
         cls.pack_fn = staticmethod(cls.bytelayout.pack_fn(header_funcstr)) ## struct.pack code
+        cls.generate_bitfield_wavedrom()
+    @classmethod
+    def generate_bitfield_wavedrom(cls):
+        if cls is LowLevelCommand or cls.__module__ != __name__:
+            return
+
+        def prepend_wavedrom_block(wavedrom_dict: dict, name:str=""):
+            wavedrom_json = json.dumps(wavedrom_dict, indent=2)
+            block = ["", f".. wavedrom:: {cls.__name__}{name}", ""]
+            block += [f"    {L}" for L in wavedrom_json.splitlines()]
+            cls.__doc__ =  "\n".join(block) + "\n" + (cls.__doc__ or "")
+
+        if cls.bytelayout:
+            prepend_wavedrom_block(cls.bytelayout.wavedrom(), "Bytes")
+        prepend_wavedrom_block(cls.bitlayout.wavedrom(cls.cmdtype), "Bits")
+
     @classmethod
     def as_struct_layout(cls):
         """Convert to Amaranth data.Struct
@@ -69,17 +90,15 @@ class LowLevelCommand(BaseCommand):
 
 
 class SynchronizeCommand(LowLevelCommand):
+    """
+    Args: 
+        cookie(u16): Arbitrary value for synchronization. When received, returned as-is in an USB IN frame.
+    """
     bitlayout = BitLayout({"mode": {
             "raster": 1,
             "output": OutputMode
         }})
     bytelayout = ByteLayout({"cookie": 2})
-    """
-    Args: 
-        cookie(u16): Arbitrary value for synchronization. When received, returned as-is in an USB IN frame.
-        output(:class:OutputMode)
-        raster(bool)
-    """
     def __init__(self, *, cookie:u16, output:OutputMode, raster:bool):
         super().__init__(cookie=cookie, output=output, raster=raster)
 
@@ -126,7 +145,7 @@ class BeamSelectCommand(LowLevelCommand):
 
 class BlankCommand(LowLevelCommand):
     """
-    Triggers beam blanking
+    Triggers beam blanking. Pin assignment of blanking signals depends on your :ref:`microscope specific pinout <config:pinout>`
 
     Args:
         enable: True if blanking, False if unblanking.
@@ -151,7 +170,7 @@ class DelayCommand(LowLevelCommand):
 class RasterRegionCommand(LowLevelCommand):
     '''
     Sets the region of the internal raster scanner module.
-    Takes :class:`DACCodeRange` as input.
+    Takes two DAC code ranges (X andas input.
     '''
     bytelayout = ByteLayout({"roi": {
         "x_start": 2,
@@ -177,8 +196,43 @@ class RasterPixelCommand(LowLevelCommand):
         super().__init__(output_en=output_en, dwell_time=dwell_time)
 
 class ArrayCommand(LowLevelCommand):
+    '''
+    ArrayCommand allows compressing multiple payloads with the same header.
+
+    Example
+    -------
+
+    Constructing an array of :class:`RasterPixelCommand`:
+
+    .. code-block:: python
+
+        cmds = bytearray()
+        cmds.extend(bytes(
+            ArrayCommand(
+                command = RasterPixelCommand.header(
+                    output_en=OutputEnable.Enabled
+                    ), 
+                array_length = 6)
+        ))
+        dwells = [1,1,2,3,5,8]
+        cmds.extend(struct.pack('>6H', *dwells))
+
+    The equivalent series of individual commands:
+
+    .. code-block:: python
+
+        cmds = bytearray()
+        dwells = [1,1,2,3,5,8]
+        cmds.extend(bytes(
+            RasterPixelCommand(
+                output_en=OutputEnable.Enabled,
+                dwell_time = dwell
+            ), 
+        ))
+        
+    '''
     bytelayout = ByteLayout({"command": 1, "array_length": 2})
-    def __init__(self, command, array_length: u16):
+    def __init__(self, command:bytes, array_length: u16):
         super().__init__(command=command, array_length=array_length)
 
 class RasterPixelFillCommand(LowLevelCommand):
