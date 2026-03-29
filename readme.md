@@ -1,8 +1,8 @@
-# Open Beam Interface
+# Open Beam(shift) Interface
 ![Overview of PCB](Images/Open%20Beam%20Interface%20Product%20Front.jpeg)
 
 ## Docs
-Check out our docs at [https://nanographs.github.io/Open-Beam-Interface/index.html](https://nanographs.github.io/Open-Beam-Interface/index.html)
+Read the documentation at [obi.beamshift.net](https://obi.beamshift.net)
 
 ## About
 The Open Beam Interface project aims to make getting data into and out of scanning and patterning systems substantially more accessible. It is applicable to a variety of scanning and patterning systems but is especially useful for electron and ion microscopes.
