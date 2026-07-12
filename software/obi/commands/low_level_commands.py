@@ -170,7 +170,7 @@ class DelayCommand(LowLevelCommand):
 class RasterRegionCommand(LowLevelCommand):
     '''
     Sets the region of the internal raster scanner module.
-    Takes two DAC code ranges (X andas input.
+    Takes two DAC code ranges (X and Y) as input.
     '''
     bytelayout = ByteLayout({"roi": {
         "x_start": 2,
