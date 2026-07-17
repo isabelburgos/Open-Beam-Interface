@@ -23,5 +23,6 @@ jobs:
         with:
           publish_branch: gh-pages
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          cname: obi.beamshift.net
           publish_dir: software/docs/build/html
           force_orphan: true
