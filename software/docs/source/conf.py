@@ -84,4 +84,4 @@ def linkcode_resolve(domain, info):
     if not info['module']:
         return None
     filename = info['module'].replace('.', '/')
-    return "https://github.com/isabelburgos/Open-Beam-Interface/blob/update-main/software/%s.py" % filename
+    return "https://github.com/isabelburgos/Open-Beam-Interface/tree/main/software/%s.py" % filename
